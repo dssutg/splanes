@@ -3,6 +3,8 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "game_loop.h"
+
 #include "../entity/entity.h"
 #include "../gui/gui.h"
 #include "../keyboard_manager/keyboard_manager.h"
@@ -11,7 +13,7 @@
 #include "../sound_manager/sound_manager.h"
 #include "../util/util.h"
 
-auto running = true;
+bool running = true;
 
 i32 layer1;
 i32 layer2;
@@ -37,7 +39,7 @@ void Restart(void) {
   Reset();
 }
 
-void Tick(void) {
+static void Tick(void) {
   if (keys[KeyPause]) {
     keys[KeyPause] = false;
 
@@ -89,7 +91,7 @@ void Tick(void) {
   }
 }
 
-void RenderLayer(i32 offsetY) {
+static void RenderLayer(i32 offsetY) {
   constexpr auto tileWidth = (WindowWidth + TileSize - 1) / TileSize;
   constexpr auto tileHeight = (WindowHeight + TileSize - 1) / TileSize;
 
@@ -108,7 +110,7 @@ void RenderLayer(i32 offsetY) {
   }
 }
 
-void Render(void) {
+static void Render(void) {
   RenderLayer(layer1);
   RenderLayer(layer2);
 
@@ -146,7 +148,7 @@ void Render(void) {
   RenderMenu();
 }
 
-void DoGameLoop(void) {
+static void DoGameLoop(void) {
   while (running) {
     SDL_Event event;
 

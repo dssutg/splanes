@@ -8,7 +8,7 @@ void MenuAboutTick(void) {
   auto pressed = false;
 
   if (keys[KeyEnter]) {
-    keys[KeyEnter] = 0;
+    keys[KeyEnter] = false;
     pressed = true;
   }
 

@@ -12,7 +12,7 @@ Entity *NewIsland(void) {
   auto island = NewEntity(EntityIsland);
 
   island->texture = 0;
-  island->data = rand() % 3;
+  island->data = (u32)(rand()) % 3;
 
   island->pos.w = islandFrames[island->data].w * 3;
   island->pos.h = islandFrames[island->data].h * 3;

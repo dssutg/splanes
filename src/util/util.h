@@ -19,5 +19,5 @@ typedef float f32;
 typedef double f64;
 
 void Fatalf(const char *const format, ...);
-void *Erealloc(void *data, i64 newByteCount);
-void *Emalloc(i64 byteCount);
+void *Erealloc(void *data, size_t newByteCount);
+void *Emalloc(size_t byteCount);

@@ -19,7 +19,7 @@ void Fatalf(const char *const format, ...) {
   exit(EXIT_FAILURE);
 }
 
-void *Erealloc(void *data, i64 newByteCount) {
+void *Erealloc(void *data, size_t newByteCount) {
   auto newData = realloc(data, newByteCount);
 
   if (newData == nullptr) {
@@ -29,6 +29,6 @@ void *Erealloc(void *data, i64 newByteCount) {
   return newData;
 }
 
-void *Emalloc(i64 byteCount) {
+void *Emalloc(size_t byteCount) {
   return Erealloc(nullptr, byteCount);
 }

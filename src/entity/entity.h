@@ -34,7 +34,7 @@ typedef struct Entity {
   bool removed;
   i32 health;
   i32 damage;
-  i32 data;
+  u32 data;
   u32 tickTime;
 
   // EntityBullet
@@ -92,7 +92,7 @@ Entity *NewBullet(i32 type,
                   i32 ya,
                   i32 ownertype,
                   i32 damage,
-                  i32 bulletframeno);
+                  u32 bulletframeno);
 void BulletTick(Entity *entity);
 void BulletRender(Entity *entity);
 

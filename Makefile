@@ -15,8 +15,44 @@ SRC := $(shell find $(SRC_DIR) -name '*.c')
 OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEPS := $(OBJ:.o=.d)
 
-# Common flags
-COMMON_CFLAGS := -Wall -Werror -O2 -g -Iinclude -std=c2x -pedantic
+# Common compiler flags
+COMMON_CFLAGS := \
+								 -Wall \
+								 -Wextra \
+								 -Wconversion \
+								 -Wsign-conversion \
+								 -Wfloat-conversion \
+								 -Wshadow \
+								 -Wnarrowing \
+								 -Wformat=2 \
+								 -Wformat-security \
+								 -Wcast-align \
+								 -Wpointer-arith \
+								 -Wnonnull \
+								 -Wdouble-promotion \
+								 -Wimplicit-fallthrough=5 \
+								 -Wmissing-declarations \
+								 -Wmissing-prototypes \
+								 -Wuninitialized \
+								 -Wduplicated-cond \
+								 -Wlogical-op \
+								 -Wnull-dereference \
+								 -Wstrict-aliasing=2 \
+								 -Wstrict-overflow=5 \
+								 -Wredundant-decls \
+								 -Wno-old-style-declaration \
+								 -Werror \
+								 -O2 \
+								 -g \
+								 -Isrc \
+								 -std=c2x \
+								 -pedantic \
+								 -Wpedantic \
+								 -Wstack-protector \
+								 -fstack-protector-strong \
+								 -fsanitize=address,undefined,leak,bounds
+
+# Common linker flags
 COMMON_LDFLAGS := -lm
 
 # dependency flags: generate .d files (exclude system headers) + phony targets

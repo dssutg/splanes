@@ -14,7 +14,7 @@ Entity *NewBullet(i32 type,
                   i32 ya,
                   i32 ownertype,
                   i32 damage,
-                  i32 bulletframeno) {
+                  u32 bulletframeno) {
   auto bullet = NewEntity(type);
 
   bullet->texture = 0;

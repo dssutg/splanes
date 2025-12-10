@@ -16,7 +16,8 @@ Entity *NewEnemyPlane(void) {
 
   enemyPlane->texture = 0;
 
-  const auto frame = &enemyPlaneFrames[rand() % ArrayLength(enemyPlaneFrames)];
+  const auto frame =
+    &enemyPlaneFrames[rand() % (i32)ArrayLength(enemyPlaneFrames)];
 
   enemyPlane->crop.x = frame->x;
   enemyPlane->crop.y = frame->y;

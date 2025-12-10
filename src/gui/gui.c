@@ -13,12 +13,12 @@ typedef struct FontCacheEntry {
 } FontCacheEntry;
 
 static FontCacheEntry *fontCache;
-static i64 fontCacheLength;
-static i64 fontCacheCapacity;
+static size_t fontCacheLength;
+static size_t fontCacheCapacity;
 
-TTF_Font *LoadFont(i32 size) {
+static TTF_Font *LoadFont(i32 size) {
   // Find the font with the required size in the loaded font cache.
-  for (i64 i = 0; i < fontCacheLength; i++) {
+  for (size_t i = 0; i < fontCacheLength; i++) {
     const auto entry = &fontCache[i];
     if (entry->size == size) {
       return entry->font;

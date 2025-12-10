@@ -33,7 +33,7 @@ static KeyMapEntry keyMap[] = {
   {SDLK_x, KeyBomb},
 };
 
-int CompareKeyMapEntries(const void *a, const void *b) {
+static int CompareKeyMapEntries(const void *a, const void *b) {
   const KeyMapEntry *const aEntry = a;
   const KeyMapEntry *const bEntry = b;
 

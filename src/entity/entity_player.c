@@ -5,50 +5,50 @@
 #include "../menu/menu.h"
 
 Entity *NewPlayer(void) {
-  auto player = NewEntity(EntityPlayer);
+  auto p = NewEntity(EntityPlayer);
 
-  player->texture = 0;
+  p->texture = 0;
 
-  player->xa = 0;
-  player->ya = 0;
+  p->xa = 0;
+  p->ya = 0;
 
-  player->crop.x = 299;
-  player->crop.y = 101;
-  player->crop.w = 61;
-  player->crop.h = 49;
+  p->crop.x = 299;
+  p->crop.y = 101;
+  p->crop.w = 61;
+  p->crop.h = 49;
 
-  player->pos.w = player->crop.w * 2;
-  player->pos.h = player->crop.h * 2;
-  player->pos.x = (WindowWidth - player->pos.w) / 2;
-  player->pos.y = WindowHeight - player->pos.h - 40;
+  p->pos.w = p->crop.w * 2;
+  p->pos.h = p->crop.h * 2;
+  p->pos.x = (WindowWidth - p->pos.w) / 2;
+  p->pos.y = WindowHeight - p->pos.h - 40;
 
-  player->hasShot = false;
-  player->hasBombed = false;
+  p->hasShot = false;
+  p->hasBombed = false;
 
-  player->health = MaxPlayerHealth;
+  p->health = MaxPlayerHealth;
 
-  player->score = 0;
-  player->distance = 0;
-  player->deathTime = 0;
-  player->bombTickTime = PlayerMaxBombTickTime;
+  p->score = 0;
+  p->distance = 0;
+  p->deathTime = 0;
+  p->bombTickTime = PlayerMaxBombTickTime;
 
-  return player;
+  return p;
 }
 
-void PlayerDoDie(Entity *player) {
-  player->deathTime++;
+void PlayerDoDie(Entity *p) {
+  p->deathTime++;
 
-  if (player->deathTime == 1) {
+  if (p->deathTime == 1) {
     constexpr i32 explosionCount = 10;
     for (i32 i = 0; i < explosionCount; i++) {
-      const auto x = player->pos.x + rand() % player->pos.w;
-      const auto y = player->pos.y + rand() % (player->pos.h / 2);
+      const auto x = p->pos.x + rand() % p->pos.w;
+      const auto y = p->pos.y + rand() % (p->pos.h / 2);
       NewExplosion(x, y);
     }
     return;
   }
 
-  if (player->deathTime > 10) {
+  if (p->deathTime > 10) {
     menuID = MenuLose;
   }
 }
@@ -60,76 +60,76 @@ void HealPlayer(i32 healPoints) {
   }
 }
 
-void PlayerTick(Entity *entity) {
-  if (entity->health <= 0) {
-    PlayerDoDie(entity);
+void PlayerTick(Entity *p) {
+  if (p->health <= 0) {
+    PlayerDoDie(p);
     return;
   }
 
-  entity->xa = 0;
+  p->xa = 0;
 
   if (keys[KeyLeft]) {
-    entity->xa = -20;
+    p->xa = -20;
   }
 
   if (keys[KeyRight]) {
-    entity->xa = 20;
+    p->xa = 20;
   }
 
-  if (keys[KeyBomb] && !entity->hasBombed) {
-    entity->hasBombed = 1;
-    entity->bombTickTime = 0;
+  if (keys[KeyBomb] && !p->hasBombed) {
+    p->hasBombed = 1;
+    p->bombTickTime = 0;
 
     auto bomb = NewBomb();
-    bomb->pos.x = entity->pos.x + (entity->pos.w - bomb->pos.w) / 2 - 10;
-    bomb->pos.y = entity->pos.y - bomb->pos.h;
+    bomb->pos.x = p->pos.x + (p->pos.w - bomb->pos.w) / 2 - 10;
+    bomb->pos.y = p->pos.y - bomb->pos.h;
   } else {
-    if (entity->hasBombed) {
-      entity->bombTickTime++;
+    if (p->hasBombed) {
+      p->bombTickTime++;
 
-      if (entity->bombTickTime >= PlayerMaxBombTickTime) {
-        entity->hasBombed = 0;
-        entity->bombTickTime = PlayerMaxBombTickTime;
+      if (p->bombTickTime >= PlayerMaxBombTickTime) {
+        p->hasBombed = 0;
+        p->bombTickTime = PlayerMaxBombTickTime;
       }
     }
   }
 
-  if (keys[KeyShoot] && !entity->hasShot) {
-    entity->hasShot = 1;
+  if (keys[KeyShoot] && !p->hasShot) {
+    p->hasShot = 1;
 
     constexpr i32 damage = 50;
 
-    auto bullet = NewBullet(EntityBullet, 0, 0, 0, -1, entity->type, damage, 0);
-    bullet->pos.x = entity->pos.x + (entity->pos.w - bullet->pos.w) / 2 - 10;
-    bullet->pos.y = entity->pos.y - bullet->pos.h;
-  } else if (entity->hasShot) {
-    entity->tickTime++;
+    auto bullet = NewBullet(EntityBullet, 0, 0, 0, -1, p->type, damage, 0);
+    bullet->pos.x = p->pos.x + (p->pos.w - bullet->pos.w) / 2 - 10;
+    bullet->pos.y = p->pos.y - bullet->pos.h;
+  } else if (p->hasShot) {
+    p->tickTime++;
 
-    if (entity->tickTime > 3) {
-      entity->hasShot = 0;
-      entity->tickTime = 0;
+    if (p->tickTime > 3) {
+      p->hasShot = 0;
+      p->tickTime = 0;
     }
   }
 
-  auto xn = entity->pos.x + entity->xa;
-  auto yn = entity->pos.y + entity->ya;
+  auto xn = p->pos.x + p->xa;
+  auto yn = p->pos.y + p->ya;
 
-  if (xn + entity->pos.w - 1 >= WindowWidth) {
-    xn = WindowWidth - entity->pos.w;
+  if (xn + p->pos.w >= WindowWidth + 1) {
+    xn = WindowWidth - p->pos.w;
   }
 
   if (xn < 0) {
     xn = 0;
   }
 
-  entity->pos.x = xn;
-  entity->pos.y = yn;
+  p->pos.x = xn;
+  p->pos.y = yn;
 
-  entity->distance++;
+  p->distance++;
 }
 
-void PlayerRender(Entity *entity) {
-  if (entity->deathTime < 5) {
-    RenderEntitySprite(entity);
+void PlayerRender(Entity *p) {
+  if (p->deathTime < 5) {
+    RenderEntitySprite(p);
   }
 }
