@@ -1,12 +1,4 @@
-#include "entity_bomb.h"
-#include "entity_bullet.h"
-#include "entity_enemy_plane.h"
-#include "entity_explosion.h"
-#include "entity_healer.h"
-#include "entity_island.h"
-#include "entity_player.h"
-#include "entity_ship.h"
-#include "entity_table.h"
+#include "entity.h"
 
 const EntityTableEntry entityTable[] = {
   [EntityPlayer] =

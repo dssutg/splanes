@@ -16,14 +16,14 @@ void MenuMainTick(void) {
     keys[KeyDown] = false;
   }
 
-  bool pressed = false;
+  auto pressed = false;
 
   if (keys[KeyEnter]) {
     pressed = true;
     keys[KeyEnter] = false;
   }
 
-  const i32 length = 3;
+  constexpr i32 length = 3;
 
   if (mainMenu.selectedIndex >= length) {
     mainMenu.selectedIndex = 0;
@@ -52,15 +52,15 @@ void MenuMainTick(void) {
 }
 
 void MenuMainRender(void) {
-  static const char *buttons[] = {
+  static const char *const buttons[] = {
     "RESUME",
     "ABOUT",
     "EXIT",
   };
 
-  const i32 size = 40;
+  constexpr i32 size = 40;
 
-  const i32 length = ArrayLength(buttons);
+  constexpr i32 length = ArrayLength(buttons);
 
   for (i32 i = 0; i < length; i++) {
     if (mainMenu.selectedIndex == i) {
@@ -81,17 +81,18 @@ void MenuMainRender(void) {
     }
   }
 
-  const i32 cropX = 99;
-  const i32 cropY = 573;
-  const i32 cropWidth = 278;
-  const i32 cropHeight = 141;
+  constexpr i32 cropX = 99;
+  constexpr i32 cropY = 573;
+  constexpr i32 cropWidth = 278;
+  constexpr i32 cropHeight = 141;
 
-  const i32 scale = 1;
+  constexpr i32 scale = 1;
 
-  const i32 width = cropWidth * scale;
-  const i32 height = cropHeight * scale;
-  const i32 x = (WindowWidth - width) / 2;
-  const i32 y = (WindowHeight + (size + 50) * ((-1) - length + 1)) / 2 - height;
+  constexpr i32 width = cropWidth * scale;
+  constexpr i32 height = cropHeight * scale;
+  constexpr i32 x = (WindowWidth - width) / 2;
+  constexpr i32 y =
+    (WindowHeight + (size + 50) * ((-1) - length + 1)) / 2 - height;
 
   RenderSprite(0, x, y, width, height, cropX, cropY, cropWidth, cropHeight);
 }

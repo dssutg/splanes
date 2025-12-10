@@ -48,14 +48,14 @@ void RenderSprite(i32 texture,
   SDL_RenderCopy(renderer, textures[texture], &src, &dest);
 }
 
-SDL_Texture *LoadTexture(const char *filename) {
-  SDL_Surface *bitmap = IMG_Load(filename);
-  if (bitmap == NULL) {
+SDL_Texture *LoadTexture(const char *const filename) {
+  auto bitmap = IMG_Load(filename);
+  if (bitmap == nullptr) {
     Fatalf("%s", IMG_GetError());
   }
 
-  SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, bitmap);
-  if (texture == NULL) {
+  auto texture = SDL_CreateTextureFromSurface(renderer, bitmap);
+  if (texture == nullptr) {
     Fatalf("can't create texture from %s: %s", filename, SDL_GetError());
   }
 
@@ -68,13 +68,7 @@ void LoadTextures(void) {
   textures[0] = LoadTexture("assets/sprites/sprites.png");
 }
 
-void RenderRect(i32 x,
-                i32 y,
-                i32 width,
-                i32 height,
-                i32 red,
-                i32 green,
-                i32 blue) {
+void RenderRect(i32 x, i32 y, i32 width, i32 height, u8 red, u8 green, u8 blue) {
   const SDL_Rect rect = {
     .x = x,
     .y = y,

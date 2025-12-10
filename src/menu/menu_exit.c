@@ -1,12 +1,12 @@
 #include "menu.h"
 
 #include "../keyboard_manager/keyboard_manager.h"
-#include "../game.h"
+#include "../game_loop/game_loop.h"
 #include "../util/util.h"
 #include "../gui/gui.h"
 
 void MenuExitTick(void) {
-  bool pressed = false;
+  auto pressed = false;
 
   if (keys[KeyUp]) {
     exitMenu.selectedIndex--;
@@ -23,7 +23,7 @@ void MenuExitTick(void) {
     keys[KeyEnter] = false;
   }
 
-  const i32 length = 2;
+  constexpr i32 length = 2;
 
   if (exitMenu.selectedIndex >= length) {
     exitMenu.selectedIndex = 0;
@@ -47,12 +47,12 @@ void MenuExitTick(void) {
 }
 
 void MenuExitRender(void) {
-  static const char *buttons[] = {
+  static const char *const buttons[] = {
     "YES",
     "NO",
   };
 
-  const i32 length = ArrayLength(buttons);
+  constexpr i32 length = ArrayLength(buttons);
 
   RenderString(0,
                0,

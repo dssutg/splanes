@@ -7,38 +7,38 @@
 static Mix_Chunk *sounds[SoundCount];
 static Mix_Music *musicTracks[MusicCount];
 
-static Mix_Chunk *NewSoundEffect(const char *filename) {
-  Mix_Chunk *soundEffect = Mix_LoadWAV(filename);
+static Mix_Chunk *NewSoundEffect(const char *const filename) {
+  auto soundEffect = Mix_LoadWAV(filename);
 
-  if (soundEffect == NULL) {
+  if (soundEffect == nullptr) {
     Fatalf("can't load %s: %s", filename, SDL_GetError());
   }
 
   return soundEffect;
 }
 
-static Mix_Music *NewMusicTrack(const char *filename) {
-  Mix_Music *music = Mix_LoadMUS(filename);
+static Mix_Music *NewMusicTrack(const char *const filename) {
+  auto music = Mix_LoadMUS(filename);
 
-  if (music == NULL) {
+  if (music == nullptr) {
     Fatalf("can't load %s: %s", filename, SDL_GetError());
   }
 
   return music;
 }
 
-void PlaySound(i32 trackID, i32 volume, i32 isMusic) {
-  if (isMusic) {
-    Mix_Music *music = musicTracks[trackID];
-    Mix_VolumeMusic(volume);
+void PlaySound(SoundID soundID, i32 volume) {
+  const auto soundEffect = sounds[soundID];
+  Mix_VolumeChunk(soundEffect, volume);
+  Mix_PlayChannel(-1, soundEffect, 0);
+}
 
-    if (Mix_PlayMusic(music, -1) == -1) {
-      Fatalf("%s", SDL_GetError());
-    }
-  } else {
-    Mix_Chunk *soundEffect = sounds[trackID];
-    Mix_VolumeChunk(soundEffect, volume);
-    Mix_PlayChannel(-1, soundEffect, 0);
+void PlayMusic(MusicID musicID, i32 volume) {
+  const auto music = musicTracks[musicID];
+  Mix_VolumeMusic(volume);
+
+  if (Mix_PlayMusic(music, -1) == -1) {
+    Fatalf("%s", SDL_GetError());
   }
 }
 

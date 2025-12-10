@@ -5,7 +5,7 @@
 #include "../gui/gui.h"
 
 void MenuAboutTick(void) {
-  bool pressed = false;
+  auto pressed = false;
 
   if (keys[KeyEnter]) {
     keys[KeyEnter] = 0;
@@ -18,7 +18,7 @@ void MenuAboutTick(void) {
 }
 
 void MenuAboutRender(void) {
-  static const char *lines[] = {
+  static const char *const lines[] = {
     "Splanes.",
     "",
     "Created by",
@@ -28,7 +28,7 @@ void MenuAboutRender(void) {
     "> BACK <",
   };
 
-  const i32 length = ArrayLength(lines);
+  constexpr i32 length = ArrayLength(lines);
 
   for (i32 i = 0; i < length; i++) {
     u8 red = 0xFF;

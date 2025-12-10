@@ -1,20 +1,19 @@
 #include "entity.h"
-#include "entity_explosion.h"
 
 #include "../renderer/renderer.h"
 #include "../util/util.h"
 
-static const SDL_Rect shipFrames[] = {
+static constexpr SDL_Rect shipFrames[] = {
   {505, 298, 41, 197},
   {463, 298, 41, 197},
 };
 
 Entity *NewShip(void) {
-  Entity *ship = NewEntity(EntityShip);
+  auto ship = NewEntity(EntityShip);
 
   ship->texture = 0;
 
-  const SDL_Rect *frame = &shipFrames[0];
+  const auto frame = &shipFrames[0];
 
   ship->pos.w = frame->w * 1;
   ship->pos.h = frame->h * 1;
@@ -52,7 +51,7 @@ void ShipTick(Entity *entity) {
 }
 
 void ShipRender(Entity *entity) {
-  const SDL_Rect *frame =
+  const auto frame =
     &shipFrames[entity->tickTime / 5 % ArrayLength(shipFrames)];
 
   RenderSprite(entity->texture,

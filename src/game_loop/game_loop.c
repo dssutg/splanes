@@ -1,31 +1,20 @@
-#include <stdbool.h>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "entity/entity_enemy_plane.h"
-#include "entity/entity.h"
-#include "entity/entity_healer.h"
-#include "entity/entity_island.h"
-#include "entity/entity_player.h"
-#include "entity/entity_ship.h"
-#include "entity/entity_table.h"
-#include "gui/gui.h"
-#include "keyboard_manager/keyboard_manager.h"
-#include "menu/menu.h"
-#include "renderer/renderer.h"
-#include "sound_manager/sound_manager.h"
-#include "util/util.h"
+#include "../entity/entity.h"
+#include "../gui/gui.h"
+#include "../keyboard_manager/keyboard_manager.h"
+#include "../menu/menu.h"
+#include "../renderer/renderer.h"
+#include "../sound_manager/sound_manager.h"
+#include "../util/util.h"
 
-bool running = true;
+auto running = true;
 
 i32 layer1;
 i32 layer2;
-
-void Restart(void);
-void RenderEntitySprite(const Entity *entity);
 
 void Reset(void) {
   player = NewPlayer();
@@ -40,7 +29,7 @@ void Reset(void) {
   aboutMenu.selectedIndex = 0;
   aboutMenu.selectedIndex = 0;
 
-  PlaySound(MusicBackground0, 70, 1);
+  PlayMusic(MusicBackground0, 70);
 }
 
 void Restart(void) {
@@ -81,18 +70,18 @@ void Tick(void) {
   layer2 += 10;
   if (layer2 >= WindowHeight) {
     layer2 = layer1 - WindowHeight;
-    i32 tmp = layer1;
+    const auto tmp = layer1;
     layer1 = layer2;
     layer2 = tmp;
   }
 
-  for (Entity *entity = entities; entity != NULL; entity = entity->next) {
+  for (auto entity = entities; entity != nullptr; entity = entity->next) {
     entityTable[entity->type].Tick(entity);
   }
 
   // delete all dead entities
-  Entity *nextEntity = NULL;
-  for (Entity *entity = entities; entity != NULL; entity = nextEntity) {
+  Entity *nextEntity = nullptr;
+  for (auto entity = entities; entity != nullptr; entity = nextEntity) {
     nextEntity = entity->next;
     if (entity->removed) {
       FreeEntity(entity);
@@ -101,8 +90,8 @@ void Tick(void) {
 }
 
 void RenderLayer(i32 offsetY) {
-  i32 tileWidth = (WindowWidth + TileSize - 1) / TileSize;
-  i32 tileHeight = (WindowHeight + TileSize - 1) / TileSize;
+  constexpr auto tileWidth = (WindowWidth + TileSize - 1) / TileSize;
+  constexpr auto tileHeight = (WindowHeight + TileSize - 1) / TileSize;
 
   for (i32 tileY = 0; tileY < tileHeight; tileY++) {
     for (i32 tileX = 0; tileX < tileWidth; tileX++) {
@@ -125,8 +114,8 @@ void Render(void) {
 
   // Render entitites
   for (i32 zIndex = 0; zIndex <= 2; zIndex++) {
-    for (Entity *entity = entities; entity != NULL; entity = entity->next) {
-      const EntityTableEntry *entry = &entityTable[entity->type];
+    for (auto entity = entities; entity != nullptr; entity = entity->next) {
+      const auto entry = &entityTable[entity->type];
       if (entry->zIndex == zIndex) {
         entry->Render(entity);
       }
@@ -202,13 +191,13 @@ void RunGame(void) {
                             WindowWidth,
                             WindowHeight,
                             0);
-  if (window == NULL) {
+  if (window == nullptr) {
     Fatalf("can't create window: %s", SDL_GetError());
   }
 
   renderer = SDL_CreateRenderer(
     window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-  if (renderer == NULL) {
+  if (renderer == nullptr) {
     Fatalf("can't create renderer: %s", SDL_GetError());
   }
 

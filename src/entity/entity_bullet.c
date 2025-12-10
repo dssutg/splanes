@@ -1,9 +1,8 @@
 #include "entity.h"
-#include "entity_explosion.h"
 
 #include "../renderer/renderer.h"
 
-static const SDL_Rect bulletFrames[] = {
+static constexpr SDL_Rect bulletFrames[] = {
   {1, 166, 32, 32},
   {34, 199, 32, 32},
 };
@@ -16,7 +15,7 @@ Entity *NewBullet(i32 type,
                   i32 ownertype,
                   i32 damage,
                   i32 bulletframeno) {
-  Entity *bullet = NewEntity(type);
+  auto bullet = NewEntity(type);
 
   bullet->texture = 0;
   bullet->data = bulletframeno;
@@ -39,10 +38,10 @@ void BulletTick(Entity *entity) {
   entity->pos.x += entity->xa * 20;
   entity->pos.y += entity->ya * 20;
 
-  bool dead = false;
+  auto dead = false;
 
-  Entity *nextEntity = NULL;
-  for (Entity *it = entities; it != NULL; it = nextEntity) {
+  Entity *nextEntity = nullptr;
+  for (auto it = entities; it != nullptr; it = nextEntity) {
     nextEntity = it->next;
 
     if ((entity->ownerType == EntityPlayer && it->type == EntityEnemyPlane) ||
@@ -63,7 +62,7 @@ void BulletTick(Entity *entity) {
     }
   }
 
-  SDL_Rect windowRect = {
+  const SDL_Rect windowRect = {
     .x = 0,
     .y = 0,
     .w = WindowWidth,
@@ -76,7 +75,7 @@ void BulletTick(Entity *entity) {
 }
 
 void BulletRender(Entity *entity) {
-  const SDL_Rect *frame = &bulletFrames[entity->data];
+  const auto frame = &bulletFrames[entity->data];
 
   RenderSprite(entity->texture,
                entity->pos.x,

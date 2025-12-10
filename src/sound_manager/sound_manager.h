@@ -3,17 +3,18 @@
 #include "../util/util.h"
 
 // SFX and Voices
-enum {
+typedef enum SoundID : u8 {
   SoundHurt,
   SoundExplosion1,
   SoundCount,
-};
+} SoundID;
 
 // Music tracks
-enum {
+typedef enum MusicID : u8 {
   MusicBackground0,
   MusicCount,
-};
+} MusicID;
 
-void PlaySound(i32 trackID, i32 volume, i32 isMusic);
+void PlaySound(SoundID soundID, i32 volume);
+void PlayMusic(MusicID musicID, i32 volume);
 void InitSoundManager(void);

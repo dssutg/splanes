@@ -5,7 +5,7 @@
 #include <SDL2/SDL_keycode.h>
 
 // Keys
-typedef enum Key {
+typedef enum Key : u8 {
   KeyDown,
   KeyEnter,
   KeyLeft,

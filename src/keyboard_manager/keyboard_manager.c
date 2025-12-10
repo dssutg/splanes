@@ -55,12 +55,12 @@ void InitKeyboardManager(void) {
 void UpdateKey(SDL_KeyCode keyCode, bool down) {
   const KeyMapEntry entryKey = {.keyCode = keyCode};
 
-  const KeyMapEntry *entry = bsearch(&entryKey,
-                                     keyMap,
-                                     ArrayLength(keyMap),
-                                     sizeof(keyMap[0]),
-                                     CompareKeyMapEntries);
-  if (entry == NULL) {
+  const KeyMapEntry *const entry = bsearch(&entryKey,
+                                           keyMap,
+                                           ArrayLength(keyMap),
+                                           sizeof(keyMap[0]),
+                                           CompareKeyMapEntries);
+  if (entry == nullptr) {
     return;
   }
 

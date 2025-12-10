@@ -4,7 +4,7 @@
 #include "../sound_manager/sound_manager.h"
 #include "../util/util.h"
 
-static const SDL_Rect explosionFrames[] = {
+static constexpr SDL_Rect explosionFrames[] = {
   {67, 166, 32, 32},
   {100, 166, 32, 32},
   {133, 166, 32, 32},
@@ -14,7 +14,7 @@ static const SDL_Rect explosionFrames[] = {
 };
 
 Entity *NewExplosion(i32 x, i32 y) {
-  Entity *explosion = NewEntity(EntityExplosion);
+  auto explosion = NewEntity(EntityExplosion);
 
   explosion->texture = 0;
   explosion->pos.x = x;
@@ -22,7 +22,7 @@ Entity *NewExplosion(i32 x, i32 y) {
   explosion->pos.w = explosionFrames[0].w * 2;
   explosion->pos.h = explosionFrames[0].h * 2;
 
-  PlaySound(SoundExplosion1, 100, 0);
+  PlaySound(SoundExplosion1, 100);
 
   return explosion;
 }
@@ -35,7 +35,7 @@ void ExplosionTick(Entity *entity) {
 }
 
 void ExplosionRender(Entity *entity) {
-  const SDL_Rect *frame =
+  const auto frame =
     &explosionFrames[entity->tickTime % ArrayLength(explosionFrames)];
 
   RenderSprite(entity->texture,

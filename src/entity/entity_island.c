@@ -2,14 +2,14 @@
 
 #include "../renderer/renderer.h"
 
-static const SDL_Rect islandFrames[] = {
+static constexpr SDL_Rect islandFrames[] = {
   {100, 496, 64, 65},
   {165, 496, 64, 65},
   {230, 496, 64, 65},
 };
 
 Entity *NewIsland(void) {
-  Entity *island = NewEntity(EntityIsland);
+  auto island = NewEntity(EntityIsland);
 
   island->texture = 0;
   island->data = rand() % 3;
@@ -35,7 +35,7 @@ void IslandTick(Entity *entity) {
 }
 
 void IslandRender(Entity *entity) {
-  const SDL_Rect *frame = &islandFrames[entity->data];
+  const auto frame = &islandFrames[entity->data];
 
   RenderSprite(entity->texture,
                entity->pos.x,

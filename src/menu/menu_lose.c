@@ -1,12 +1,12 @@
 #include "menu.h"
 
-#include "../game.h"
+#include "../game_loop/game_loop.h"
 #include "../gui/gui.h"
 #include "../keyboard_manager/keyboard_manager.h"
 #include "../util/util.h"
 
 void MenuLoseTick(void) {
-  bool pressed = false;
+  auto pressed = false;
 
   if (keys[KeyUp]) {
     loseMenu.selectedIndex--;
@@ -23,7 +23,7 @@ void MenuLoseTick(void) {
     keys[KeyEnter] = false;
   }
 
-  const i32 length = 2;
+  constexpr i32 length = 2;
 
   if (loseMenu.selectedIndex >= length) {
     loseMenu.selectedIndex = 0;
@@ -48,12 +48,12 @@ void MenuLoseTick(void) {
 }
 
 void MenuLoseRender(void) {
-  static const char *buttons[] = {
+  static const char *const buttons[] = {
     "RESTART GAME",
     "EXIT",
   };
 
-  const i32 length = ArrayLength(buttons);
+  constexpr i32 length = ArrayLength(buttons);
 
   RenderString(0, 0, 40, 0xFF, 0xFF, 0x00, 0xFF, 1, -3, "YOU LOSE!");
   RenderString(0, 0, 40, 0xFF, 0xFF, 0x00, 0xFF, 1, -2, "TRY AGAIN?");

@@ -1,14 +1,13 @@
 #include "entity.h"
-#include "entity_explosion.h"
 
 #include "../renderer/renderer.h"
 
-static const SDL_Rect bombFrames[] = {
+static constexpr SDL_Rect bombFrames[] = {
   {265, 265, 9, 21},
 };
 
 Entity *NewBomb(void) {
-  Entity *bomb = NewEntity(EntityBomb);
+  auto bomb = NewEntity(EntityBomb);
 
   bomb->texture = 0;
   bomb->data = 1;
@@ -28,7 +27,7 @@ Entity *NewBomb(void) {
 }
 
 static void BombCalcSize(Entity *bomb, i32 *w, i32 *h) {
-  const f64 scale = pow(0.90, bomb->tickTime);
+  const auto scale = pow(0.90, bomb->tickTime);
 
   *w = (i32)(bomb->pos.w * scale);
   *h = (i32)(bomb->pos.h * scale);
@@ -55,8 +54,8 @@ void BombTick(Entity *entity) {
   scaledrect.y = entity->pos.y;
   BombCalcSize(entity, &scaledrect.w, &scaledrect.h);
 
-  Entity *nextEntity = NULL;
-  for (Entity *it = entities; it != NULL; it = nextEntity) {
+  Entity *nextEntity = nullptr;
+  for (auto it = entities; it != nullptr; it = nextEntity) {
     nextEntity = it->next;
 
     if (it->type == EntityShip && SDL_HasIntersection(&it->pos, &scaledrect)) {
@@ -75,7 +74,7 @@ void BombTick(Entity *entity) {
 }
 
 void BombRender(Entity *entity) {
-  const SDL_Rect *frame = &bombFrames[0];
+  const auto frame = &bombFrames[0];
 
   i32 width, height;
   BombCalcSize(entity, &width, &height);

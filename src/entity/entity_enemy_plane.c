@@ -1,11 +1,9 @@
 #include "entity.h"
-#include "entity_bullet.h"
-#include "entity_explosion.h"
 
 #include "../util/util.h"
 #include "../renderer/renderer.h"
 
-static const SDL_Rect enemyPlaneFrames[] = {
+static constexpr SDL_Rect enemyPlaneFrames[] = {
   {1, 1, 32, 32},
   {1, 34, 32, 32},
   {1, 67, 32, 32},
@@ -14,12 +12,11 @@ static const SDL_Rect enemyPlaneFrames[] = {
 };
 
 Entity *NewEnemyPlane(void) {
-  Entity *enemyPlane = NewEntity(EntityEnemyPlane);
+  auto enemyPlane = NewEntity(EntityEnemyPlane);
 
   enemyPlane->texture = 0;
 
-  const SDL_Rect *frame =
-    &enemyPlaneFrames[rand() % ArrayLength(enemyPlaneFrames)];
+  const auto frame = &enemyPlaneFrames[rand() % ArrayLength(enemyPlaneFrames)];
 
   enemyPlane->crop.x = frame->x;
   enemyPlane->crop.y = frame->y;

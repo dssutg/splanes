@@ -1,3 +1,5 @@
+#include "menu.h"
+
 void MenuNoneTick(void) {
   // Nothing should be here.
 }

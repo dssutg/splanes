@@ -15,9 +15,9 @@ Entity *NewEntity(EntityType type) {
   entity->removed = false;
 
   // insert to the head of entity list
-  entity->prev = NULL;
+  entity->prev = nullptr;
   entity->next = entities;
-  if (entities != NULL) {
+  if (entities != nullptr) {
     entities->prev = entity; // not first element?
   }
 
@@ -27,7 +27,7 @@ Entity *NewEntity(EntityType type) {
 }
 
 void FreeEntity(Entity *entity) {
-  if (entity == NULL || entities == NULL) {
+  if (entity == nullptr || entities == nullptr) {
     return;
   }
 
@@ -35,10 +35,10 @@ void FreeEntity(Entity *entity) {
     entities = entity->next;
   }
 
-  if (entity->next != NULL) {
+  if (entity->next != nullptr) {
     entity->next->prev = entity->prev;
   }
-  if (entity->prev != NULL) {
+  if (entity->prev != nullptr) {
     entity->prev->next = entity->next;
   }
 
@@ -57,10 +57,10 @@ void HurtEntity(Entity *entity, i32 damage) {
     entity->health -= damage;
   }
 
-  PlaySound(SoundHurt, 100, 0);
+  PlaySound(SoundHurt, 100);
 }
 
-void RenderEntitySprite(const Entity *entity) {
+void RenderEntitySprite(const Entity *const entity) {
   RenderSprite(entity->texture,
                entity->pos.x,
                entity->pos.y,
@@ -73,8 +73,8 @@ void RenderEntitySprite(const Entity *entity) {
 }
 
 void RemoveAllEntities(void) {
-  Entity *next = NULL;
-  for (Entity *entity = entities; entity != NULL; entity = next) {
+  Entity *next = nullptr;
+  for (auto entity = entities; entity != nullptr; entity = next) {
     next = entity->next;
     FreeEntity(entity);
   }

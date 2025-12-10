@@ -1,15 +1,11 @@
-#include "entity_player.h"
 #include "entity.h"
-#include "entity_bomb.h"
-#include "entity_bullet.h"
-#include "entity_explosion.h"
 
 #include "../renderer/renderer.h"
 #include "../keyboard_manager/keyboard_manager.h"
 #include "../menu/menu.h"
 
 Entity *NewPlayer(void) {
-  Entity *player = NewEntity(EntityPlayer);
+  auto player = NewEntity(EntityPlayer);
 
   player->texture = 0;
 
@@ -43,10 +39,10 @@ void PlayerDoDie(Entity *player) {
   player->deathTime++;
 
   if (player->deathTime == 1) {
-    const i32 explosionCount = 10;
+    constexpr i32 explosionCount = 10;
     for (i32 i = 0; i < explosionCount; i++) {
-      const i32 x = player->pos.x + rand() % player->pos.w;
-      const i32 y = player->pos.y + rand() % (player->pos.h / 2);
+      const auto x = player->pos.x + rand() % player->pos.w;
+      const auto y = player->pos.y + rand() % (player->pos.h / 2);
       NewExplosion(x, y);
     }
     return;
@@ -84,7 +80,7 @@ void PlayerTick(Entity *entity) {
     entity->hasBombed = 1;
     entity->bombTickTime = 0;
 
-    Entity *bomb = NewBomb();
+    auto bomb = NewBomb();
     bomb->pos.x = entity->pos.x + (entity->pos.w - bomb->pos.w) / 2 - 10;
     bomb->pos.y = entity->pos.y - bomb->pos.h;
   } else {
@@ -101,10 +97,9 @@ void PlayerTick(Entity *entity) {
   if (keys[KeyShoot] && !entity->hasShot) {
     entity->hasShot = 1;
 
-    const i32 damage = 50;
+    constexpr i32 damage = 50;
 
-    Entity *bullet =
-      NewBullet(EntityBullet, 0, 0, 0, -1, entity->type, damage, 0);
+    auto bullet = NewBullet(EntityBullet, 0, 0, 0, -1, entity->type, damage, 0);
     bullet->pos.x = entity->pos.x + (entity->pos.w - bullet->pos.w) / 2 - 10;
     bullet->pos.y = entity->pos.y - bullet->pos.h;
   } else if (entity->hasShot) {
@@ -116,8 +111,8 @@ void PlayerTick(Entity *entity) {
     }
   }
 
-  i32 xn = entity->pos.x + entity->xa;
-  i32 yn = entity->pos.y + entity->ya;
+  auto xn = entity->pos.x + entity->xa;
+  auto yn = entity->pos.y + entity->ya;
 
   if (xn + entity->pos.w - 1 >= WindowWidth) {
     xn = WindowWidth - entity->pos.w;

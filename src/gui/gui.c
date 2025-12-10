@@ -19,7 +19,7 @@ static i64 fontCacheCapacity;
 TTF_Font *LoadFont(i32 size) {
   // Find the font with the required size in the loaded font cache.
   for (i64 i = 0; i < fontCacheLength; i++) {
-    const FontCacheEntry *entry = &fontCache[i];
+    const auto entry = &fontCache[i];
     if (entry->size == size) {
       return entry->font;
     }
@@ -36,12 +36,12 @@ TTF_Font *LoadFont(i32 size) {
   }
 
   // Reserve the new font entry.
-  FontCacheEntry *entry = &fontCache[fontCacheLength];
+  auto entry = &fontCache[fontCacheLength];
   fontCacheLength++;
 
   // Open the font.
-  TTF_Font *font = TTF_OpenFont("assets/fonts/OpenSans-Bold.ttf", size);
-  if (font == NULL) {
+  auto font = TTF_OpenFont("assets/fonts/OpenSans-Bold.ttf", size);
+  if (font == nullptr) {
     Fatalf("%s", SDL_GetError());
   }
 
@@ -63,14 +63,14 @@ void RenderProgressBar(i32 x,
   RenderRect(x, y, strokeSize, height, 0, 0, 0);
   RenderRect(x + width - strokeSize - 1, y, strokeSize, height, 0, 0, 0);
 
-  const i32 cropX = x + strokeSize;
-  const i32 cropY = y + strokeSize;
-  const i32 cropWidth = width - strokeSize * 2;
-  const i32 cropHeight = height - strokeSize * 2;
+  const auto cropX = x + strokeSize;
+  const auto cropY = y + strokeSize;
+  const auto cropWidth = width - strokeSize * 2;
+  const auto cropHeight = height - strokeSize * 2;
 
-  i32 red = 0xFF;
-  i32 green = 0x00;
-  i32 blue = 0x00;
+  u8 red = 0xFF;
+  u8 green = 0x00;
+  u8 blue = 0x00;
 
   if (progress > 75) {
     red = 0x00;
@@ -93,9 +93,9 @@ void RenderString(i32 x,
                   u8 green,
                   u8 blue,
                   u8 alpha,
-                  i32 flags,
+                  u32 flags,
                   i32 lineNumber,
-                  const char *format,
+                  const char *const format,
                   ...) {
   char text[4096];
   va_list args;
@@ -114,14 +114,14 @@ void RenderString(i32 x,
     .a = alpha,
   };
 
-  TTF_Font *font = LoadFont(size);
+  const auto font = LoadFont(size);
 
-  SDL_Surface *fontSurface = TTF_RenderText_Blended(font, text, color);
-  if (fontSurface == NULL) {
+  auto fontSurface = TTF_RenderText_Blended(font, text, color);
+  if (fontSurface == nullptr) {
     Fatalf("%s", SDL_GetError());
   }
 
-  SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, fontSurface);
+  auto texture = SDL_CreateTextureFromSurface(renderer, fontSurface);
   if (flags == 1) {
     x = (WindowWidth - fontSurface->w) / 2;
     y = (WindowHeight + (fontSurface->h + 50) * lineNumber) / 2;
@@ -147,15 +147,15 @@ void RenderString(i32 x,
 }
 
 void RenderHealthBar(i32 health) {
-  const i32 scale = 2;
+  constexpr i32 scale = 2;
 
-  const i32 x = 20;
-  const i32 y = 20;
+  constexpr i32 x = 20;
+  constexpr i32 y = 20;
 
   i32 cropX = 364;
-  i32 cropY = 199;
+  constexpr i32 cropY = 199;
   i32 cropWidth = 130;
-  i32 cropHeight = 14;
+  constexpr i32 cropHeight = 14;
 
   RenderSprite(0,
                x,
@@ -174,9 +174,9 @@ void RenderHealthBar(i32 health) {
     return;
   }
 
-  const i32 maxElements = 18;
+  constexpr i32 maxElements = 18;
 
-  i32 elementCount = health * maxElements / 100;
+  auto elementCount = health * maxElements / 100;
   if (elementCount > maxElements) {
     elementCount = maxElements;
   }
@@ -195,13 +195,13 @@ void RenderHealthBar(i32 health) {
 }
 
 void RenderSmallLogo(void) {
-  const i32 cropWidth = 115;
-  const i32 cropHeight = 58;
+  constexpr i32 cropWidth = 115;
+  constexpr i32 cropHeight = 58;
 
-  const i32 scale = 1;
+  constexpr i32 scale = 1;
 
-  const i32 width = cropWidth * scale;
-  const i32 height = cropHeight * scale;
+  constexpr auto width = cropWidth * scale;
+  constexpr auto height = cropHeight * scale;
 
   RenderSprite(
     0, WindowWidth - width, 0, width, height, 700, 401, cropWidth, cropHeight);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -19,6 +18,6 @@ typedef int64_t i64;
 typedef float f32;
 typedef double f64;
 
-void Fatalf(const char *format, ...);
+void Fatalf(const char *const format, ...);
 void *Erealloc(void *data, i64 newByteCount);
 void *Emalloc(i64 byteCount);

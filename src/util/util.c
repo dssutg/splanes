@@ -6,7 +6,7 @@
 
 const char *programName = "splanes";
 
-void Fatalf(const char *format, ...) {
+void Fatalf(const char *const format, ...) {
   fprintf(stderr, "%s: ", programName);
 
   va_list args;
@@ -20,9 +20,9 @@ void Fatalf(const char *format, ...) {
 }
 
 void *Erealloc(void *data, i64 newByteCount) {
-  void *newData = realloc(data, newByteCount);
+  auto newData = realloc(data, newByteCount);
 
-  if (newData == NULL) {
+  if (newData == nullptr) {
     Fatalf("out of memory");
   }
 
@@ -30,5 +30,5 @@ void *Erealloc(void *data, i64 newByteCount) {
 }
 
 void *Emalloc(i64 byteCount) {
-  return Erealloc(NULL, byteCount);
+  return Erealloc(nullptr, byteCount);
 }

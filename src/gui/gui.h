@@ -16,9 +16,9 @@ void RenderString(i32 x,
                   u8 green,
                   u8 blue,
                   u8 alpha,
-                  i32 flags,
+                  u32 flags,
                   i32 lineNumber,
-                  const char *format,
+                  const char *const format,
                   ...);
 
 void RenderHealthBar(i32 health);

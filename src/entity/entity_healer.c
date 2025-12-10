@@ -1,14 +1,13 @@
 #include "entity.h"
-#include "entity_player.h"
 
 #include "../renderer/renderer.h"
 
-static const SDL_Rect healerFrames[] = {
+static constexpr SDL_Rect healerFrames[] = {
   {166, 265, 29, 15},
 };
 
 Entity *NewHealer(void) {
-  Entity *healer = NewEntity(EntityHealer);
+  auto healer = NewEntity(EntityHealer);
 
   healer->texture = 0;
   healer->data = 0;
@@ -39,7 +38,7 @@ void HealerTick(Entity *entity) {
 }
 
 void HealerRender(Entity *entity) {
-  const SDL_Rect *frame = &healerFrames[entity->data];
+  const auto frame = &healerFrames[entity->data];
 
   RenderSprite(entity->texture,
                entity->pos.x,

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdbool.h>
-
 extern bool running;
 
 void Reset(void);

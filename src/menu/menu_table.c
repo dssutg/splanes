@@ -1,10 +1,4 @@
-#include "menu_table.h"
-
-#include "menu_about.h"
-#include "menu_exit.h"
-#include "menu_lose.h"
-#include "menu_main.h"
-#include "menu_none.h"
+#include "menu.h"
 
 const MenuTableEntry menuTable[] = {
   [MenuNone] =
