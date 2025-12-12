@@ -1,33 +1,26 @@
 #pragma once
 
-#include <SDL2/SDL_render.h>
-
-#include "../util/util.h"
+#include "../lib/std.h"
 
 constexpr auto WindowDelayMilliseconds = 50;
 constexpr auto WindowScale = 1;
 constexpr auto WindowWidth = 800 * WindowScale;
 constexpr auto WindowHeight = 600 * WindowScale;
-constexpr auto TileSize = 32;
+
+constexpr std::string windowTitle = "Splanes";
+
 constexpr auto TextureCount = 16;
 
-extern SDL_Renderer *renderer;
-extern SDL_Texture *textures[TextureCount];
-extern SDL_Window *window;
-extern const char *windowTitle;
+constexpr auto TileSize = 32;
 
-void RenderSprite(i32 texture,
-                  i32 x,
-                  i32 y,
-                  i32 width,
-                  i32 height,
-                  i32 cropX,
-                  i32 cropY,
-                  i32 cropWidth,
-                  i32 cropHeight);
+inline SDL_Renderer *renderer;
+inline SDL_Texture *textures[TextureCount];
+inline SDL_Window *window;
 
-SDL_Texture *LoadTexture(const char *const filename);
+void RenderSprite(int32_t texture, const SDL_Rect &dest, const SDL_Rect &src);
 
-void LoadTextures(void);
+SDL_Texture *LoadTexture(const std::string &filename);
 
-void RenderRect(i32 x, i32 y, i32 width, i32 height, u8 red, u8 green, u8 blue);
+void LoadTextures();
+
+void RenderRect(const SDL_Rect &rect, const SDL_Color &color);

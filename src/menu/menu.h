@@ -1,55 +1,44 @@
 #pragma once
 
-#include "../util/util.h"
+#include "../lib/std.h"
 
-// Menus
-typedef enum MenuType : u8 {
-  MenuNone,
-  MenuMain,
-  MenuExit,
-  MenuAbout,
-  MenuLose,
-} MenuType;
+class Menu {
+  public:
+  int32_t selectedIndex = 0;
 
-typedef struct Menu {
-  i32 selectedIndex;
-} Menu;
+  virtual ~Menu();
 
-typedef struct MenuTableEntry {
-  void (*Tick)(void);
-  void (*Render)(void);
-} MenuTableEntry;
+  void close();
+  void openMenu(Menu *menu);
+  void handleUpAndDownSelection(int32_t itemCount);
 
-extern const MenuTableEntry menuTable[];
+  virtual void tick() = 0;
+  virtual void render() = 0;
+};
 
-extern Menu aboutMenu;
-extern Menu exitMenu;
-extern Menu loseMenu;
-extern Menu mainMenu;
+class MainMenu : public Menu {
+  void tick() override;
+  void render() override;
+};
 
-extern MenuType prevMenuID;
-extern MenuType menuID;
+class ExitMenu : public Menu {
+  void tick() override;
+  void render() override;
+};
 
-// Base Menu methods
-void TickMenu(void);
-void RenderMenu(void);
+class AboutMenu : public Menu {
+  void tick() override;
+  void render() override;
+};
 
-// About Menu methods
-void MenuAboutTick(void);
-void MenuAboutRender(void);
+class LoseMenu : public Menu {
+  void tick() override;
+  void render() override;
+};
 
-// Exit Menu methods
-void MenuExitTick(void);
-void MenuExitRender(void);
-
-// Lose Menu methods
-void MenuLoseTick(void);
-void MenuLoseRender(void);
-
-// Main Menu methods
-void MenuMainTick(void);
-void MenuMainRender(void);
-
-// None Menu methods
-void MenuNoneTick(void);
-void MenuNoneRender(void);
+void PushMenu(Menu *menu);
+void ResetToMenu(Menu *menu);
+void PopMenu();
+void CloseAllMenus();
+bool HasMenus();
+std::optional<Menu *> TopMenu();

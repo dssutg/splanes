@@ -1,20 +1,19 @@
 #pragma once
 
-#include "../util/util.h"
+#include "../lib/std.h"
 
 // SFX and Voices
-typedef enum SoundID : u8 {
-  SoundHurt,
-  SoundExplosion1,
-  SoundCount,
-} SoundID;
+enum class SoundID : uint8_t {
+  Hurt,
+  Explosion1,
+};
 
 // Music tracks
-typedef enum MusicID : u8 {
-  MusicBackground0,
-  MusicCount,
-} MusicID;
+enum class MusicID : uint8_t {
+  Background0,
+};
 
-void PlaySound(SoundID soundID, i32 volume);
-void PlayMusic(MusicID musicID, i32 volume);
-void InitSoundManager(void);
+void PlaySound(SoundID soundID, int32_t volume);
+void PlayMusic(MusicID musicID, int32_t volume);
+void InitSoundManager();
+void FreeSoundManager();

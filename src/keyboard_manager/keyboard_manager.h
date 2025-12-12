@@ -1,25 +1,25 @@
 #pragma once
 
+#include "../lib/std.h"
+
 #include "../util/util.h"
 
-#include <SDL2/SDL_keycode.h>
-
 // Keys
-typedef enum Key : u8 {
-  KeyDown,
-  KeyEnter,
-  KeyLeft,
-  KeyMusicVolumeDown,
-  KeyMusicVolumeUp,
-  KeyPause,
-  KeyRight,
-  KeyUp,
-  KeyShoot,
-  KeyBomb,
-  KeyCount,
-} Key;
+enum class Key : uint8_t {
+  Down,
+  Enter,
+  Left,
+  MusicVolumeDown,
+  MusicVolumeUp,
+  Pause,
+  Right,
+  Up,
+  Shoot,
+  Bomb,
+};
 
-extern bool keys[KeyCount];
+inline std::unordered_map<Key, bool> keys;
 
-void UpdateKey(SDL_KeyCode keyCode, bool down);
-void InitKeyboardManager(void);
+bool SingleKeyPress(Key key);
+
+void UpdateKey(SDL_Keycode keyCode, bool down);

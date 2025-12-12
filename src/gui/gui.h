@@ -1,26 +1,20 @@
 #pragma once
 
-#include "../util/util.h"
+#include "../lib/std.h"
 
-void RenderProgressBar(i32 x,
-                       i32 y,
-                       i32 width,
-                       i32 height,
-                       i32 strokeSize,
-                       i32 progress);
+void RenderProgressBar(const SDL_Rect &boundingBox,
+                       int32_t strokeSize,
+                       int32_t progress);
 
-void RenderString(i32 x,
-                  i32 y,
-                  i32 size,
-                  u8 red,
-                  u8 green,
-                  u8 blue,
-                  u8 alpha,
-                  u32 flags,
-                  i32 lineNumber,
+void RenderString(int32_t x,
+                  int32_t y,
+                  int32_t size,
+                  const SDL_Color &color,
+                  bool centerRelativeToWindow,
+                  int32_t lineNumber,
                   const char *const format,
                   ...);
 
-void RenderHealthBar(i32 health);
-void RenderSmallLogo(void);
-void FreeFontCache(void);
+void RenderHealthBar(int32_t health);
+void RenderSmallLogo();
+void FreeFontCache();

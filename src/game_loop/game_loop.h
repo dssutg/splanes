@@ -1,7 +1,13 @@
 #pragma once
 
-extern bool running;
+#include "../lib/std.h"
 
-void Reset(void);
-void Restart(void);
-void RunGame(void);
+#include "../level/level.h"
+
+inline bool running = true;
+
+inline std::unique_ptr<Level> level;
+
+void Reset();
+void Restart();
+void RunGame();

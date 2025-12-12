@@ -1,5 +1,5 @@
 # Toolchain
-CC ?= gcc
+CC ?= g++
 AR ?= ar
 RM ?= rm -f
 MKDIR_P ?= mkdir -p
@@ -11,8 +11,8 @@ BUILD_DIR := build
 BIN_DIR := bin
 
 # Recursive source list
-SRC := $(shell find $(SRC_DIR) -name '*.c')
-OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
+SRC := $(shell find $(SRC_DIR) -name '*.cpp')
+OBJ := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRC))
 DEPS := $(OBJ:.o=.d)
 
 # Common compiler flags
@@ -32,7 +32,6 @@ COMMON_CFLAGS := \
 								 -Wdouble-promotion \
 								 -Wimplicit-fallthrough=5 \
 								 -Wmissing-declarations \
-								 -Wmissing-prototypes \
 								 -Wuninitialized \
 								 -Wduplicated-cond \
 								 -Wlogical-op \
@@ -40,20 +39,17 @@ COMMON_CFLAGS := \
 								 -Wstrict-aliasing=2 \
 								 -Wstrict-overflow=5 \
 								 -Wredundant-decls \
-								 -Wno-old-style-declaration \
 								 -Werror \
 								 -O2 \
+								 -march=native -I. \
 								 -g \
-								 -Isrc \
-								 -std=c2x \
-								 -pedantic \
-								 -Wpedantic \
+								 -std=gnu++23 \
 								 -Wstack-protector \
 								 -fstack-protector-strong \
 								 -fsanitize=address,undefined,leak,bounds
 
 # Common linker flags
-COMMON_LDFLAGS := -lm
+COMMON_LDFLAGS := -lm -lstdc++
 
 # dependency flags: generate .d files (exclude system headers) + phony targets
 DEPFLAGS := -MMD -MP
@@ -116,7 +112,30 @@ $(BIN_DIR)/$(PLATFORM_TAG)/$(TARGET): $(OBJ)
 
 # Compile object files and generate deps. Make each .o also depend on its .d to avoid races with -j.
 # The compiler invocation produces the .d file as a side-effect.
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(BUILD_DIR)/%.d
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(BUILD_DIR)/%.d
+	@$(MKDIR_P) $(dir $@)
+	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
+
+insanity: $(SRC_DIR)/lib/std.h
+	g++ $(CFLAGS) $(LDFLAGS) -c $<
+
+# A pattern rule to create the .d file if make asks for it directly.
+# This runs the compiler to produce .d (and a .o as side-effect if necessary).
+$(BUILD_DIR)/%.d: ;
+
+# Convenience per-platform targets
+linux:
+	$(MAKE) PLAT=linux all
+
+macos:
+	$(MAKE) PLAT=macos all
+
+windows:
+	$(MAKE) PLAT=windows all
+
+# Compile object files and generate deps. Make each .o also depend on its .d to avoid races with -j.
+# The compiler invocation produces the .d file as a side-effect.
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(BUILD_DIR)/%.d
 	@$(MKDIR_P) $(dir $@)
 	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
 
@@ -148,4 +167,20 @@ rebuild: distclean all
 check: format
 
 format:
-	find . -name '*.c' -or -name '*.h' | xargs clang-format -i
+	find . -name '*.cpp' -or -name '*.h' | xargs clang-format -i
+
+# Clean rules
+clean:
+	$(RM) $(OBJ) $(DEPS)
+	-@rmdir --ignore-fail-on-non-empty -p $(sort $(dir $(OBJ))) 2>/dev/null || true
+
+distclean: clean
+	$(RM) $(BIN_DIR)/$()/$(TARGET)
+
+# Rebuild
+rebuild: distclean all
+
+check: format
+
+format:
+	find . -name '*.cpp' -or -name '*.h' | xargs clang-format -i
