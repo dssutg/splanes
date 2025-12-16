@@ -3,64 +3,56 @@
 #include "../renderer/renderer.h"
 #include "../util/util.h"
 
-static constexpr SDL_Rect shipFrames[] = {
+static constexpr SDL_Rect frames[] = {
   {505, 298, 41, 197},
   {463, 298, 41, 197},
 };
 
-Entity *NewShip(void) {
-  auto ship = NewEntity(EntityShip);
+Entity *NewShip() {
+  auto e = NewEntity(EntityShip);
 
-  ship->texture = 0;
+  e->texture = 0;
 
-  const auto frame = &shipFrames[0];
+  const auto frame = &frames[0];
 
-  ship->pos.w = frame->w * 1;
-  ship->pos.h = frame->h * 1;
-  ship->pos.x = rand() % WindowWidth,
-  ship->pos.y = -(rand() % WindowHeight) - ship->pos.h;
+  e->pos.w = frame->w * 1;
+  e->pos.h = frame->h * 1;
+  e->pos.x = rand() % WindowWidth,
+  e->pos.y = -(rand() % WindowHeight) - e->pos.h;
 
-  ship->xa = 0;
-  ship->ya = 1;
+  e->xa = 0;
+  e->ya = 1;
 
-  ship->hasShot = false;
-  ship->hasBombed = false;
-  ship->health = 100;
+  e->hasShot = false;
+  e->hasBombed = false;
+  e->health = 100;
 
-  return ship;
+  return e;
 }
 
-void ShipTick(Entity *entity) {
-  entity->tickTime++;
-  if (entity->tickTime > 10) {
-    entity->tickTime = 0;
+void ShipTick(Entity *e) {
+  e->tickTime++;
+  if (e->tickTime > 10) {
+    e->tickTime = 0;
   }
 
-  if (entity->health <= 0) {
-    NewExplosion(entity->pos.x, entity->pos.y);
-    entity->removed = true;
+  if (e->health <= 0) {
+    NewExplosion(e->pos.x, e->pos.y);
+    e->removed = true;
     return;
   }
 
-  entity->pos.x += entity->xa * 11;
-  entity->pos.y += entity->ya * 11;
+  e->pos.x += e->xa * 11;
+  e->pos.y += e->ya * 11;
 
-  if (entity->pos.y >= WindowHeight) {
-    entity->removed = true;
+  if (e->pos.y >= WindowHeight) {
+    e->removed = true;
   }
 }
 
-void ShipRender(Entity *entity) {
-  const auto frame =
-    &shipFrames[entity->tickTime / 5 % ArrayLength(shipFrames)];
+void ShipRender(Entity *e) {
+  const auto f = &frames[e->tickTime / 5 % ArrayLength(frames)];
 
-  RenderSprite(entity->texture,
-               entity->pos.x,
-               entity->pos.y,
-               entity->pos.w,
-               entity->pos.h,
-               frame->x,
-               frame->y,
-               frame->w,
-               frame->h);
+  RenderSprite(
+    e->texture, e->pos.x, e->pos.y, e->pos.w, e->pos.h, f->x, f->y, f->w, f->h);
 }

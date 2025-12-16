@@ -4,21 +4,14 @@
 #include "../util/util.h"
 #include "../gui/gui.h"
 
-void MenuAboutTick(void) {
-  auto pressed = false;
-
-  if (keys[KeyEnter]) {
-    keys[KeyEnter] = false;
-    pressed = true;
-  }
-
-  if (pressed) {
+void MenuAboutTick() {
+  if (SingleKeyPress(KeyEnter)) {
     menuID = MenuMain;
   }
 }
 
-void MenuAboutRender(void) {
-  static const char *const lines[] = {
+void MenuAboutRender() {
+  static const char *lines[] = {
     "Splanes.",
     "",
     "Created by",

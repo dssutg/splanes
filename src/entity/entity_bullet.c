@@ -2,41 +2,41 @@
 
 #include "../renderer/renderer.h"
 
-static constexpr SDL_Rect bulletFrames[] = {
+static constexpr SDL_Rect frames[] = {
   {1, 166, 32, 32},
   {34, 199, 32, 32},
 };
 
-Entity *NewBullet(i32 type,
+Entity *NewBullet(EntityType type,
                   i32 x,
                   i32 y,
                   i32 xa,
                   i32 ya,
-                  i32 ownertype,
+                  EntityType ownertype,
                   i32 damage,
                   u32 bulletframeno) {
-  auto bullet = NewEntity(type);
+  auto e = NewEntity(type);
 
-  bullet->texture = 0;
-  bullet->data = bulletframeno;
+  e->texture = 0;
+  e->data = bulletframeno;
 
-  bullet->pos.x = x;
-  bullet->pos.y = y;
-  bullet->pos.w = bulletFrames[bulletframeno].w * 2;
-  bullet->pos.h = bulletFrames[bulletframeno].h * 2;
+  e->pos.x = x;
+  e->pos.y = y;
+  e->pos.w = frames[bulletframeno].w * 2;
+  e->pos.h = frames[bulletframeno].h * 2;
 
-  bullet->xa = xa;
-  bullet->ya = ya;
+  e->xa = xa;
+  e->ya = ya;
 
-  bullet->ownerType = ownertype;
-  bullet->damage = damage;
+  e->ownerType = ownertype;
+  e->damage = damage;
 
-  return bullet;
+  return e;
 }
 
-void BulletTick(Entity *entity) {
-  entity->pos.x += entity->xa * 20;
-  entity->pos.y += entity->ya * 20;
+void BulletTick(Entity *e) {
+  e->pos.x += e->xa * 20;
+  e->pos.y += e->ya * 20;
 
   auto dead = false;
 
@@ -44,16 +44,16 @@ void BulletTick(Entity *entity) {
   for (auto it = entities; it != nullptr; it = nextEntity) {
     nextEntity = it->next;
 
-    if ((entity->ownerType == EntityPlayer && it->type == EntityEnemyPlane) ||
-        (entity->ownerType == EntityEnemyPlane && it->type == EntityPlayer)) {
-      if (SDL_HasIntersection(&it->pos, &entity->pos)) {
+    if ((e->ownerType == EntityPlayer && it->type == EntityEnemyPlane) ||
+        (e->ownerType == EntityEnemyPlane && it->type == EntityPlayer)) {
+      if (SDL_HasIntersection(&it->pos, &e->pos)) {
         dead = true;
 
-        HurtEntity(it, entity->damage);
+        HurtEntity(it, e->damage);
 
         if (it->type == EntityPlayer) {
-          NewExplosion(entity->pos.x, entity->pos.y);
-        } else if (entity->ownerType == EntityPlayer) {
+          NewExplosion(e->pos.x, e->pos.y);
+        } else if (e->ownerType == EntityPlayer) {
           if (player->score + 1 > player->score) {
             player->score++;
           }
@@ -69,21 +69,14 @@ void BulletTick(Entity *entity) {
     .h = WindowHeight,
   };
 
-  if (dead || !SDL_HasIntersection(&entity->pos, &windowRect)) {
-    entity->removed = true;
+  if (dead || !SDL_HasIntersection(&e->pos, &windowRect)) {
+    e->removed = true;
   }
 }
 
-void BulletRender(Entity *entity) {
-  const auto frame = &bulletFrames[entity->data];
+void BulletRender(Entity *e) {
+  const auto f = &frames[e->data];
 
-  RenderSprite(entity->texture,
-               entity->pos.x,
-               entity->pos.y,
-               entity->pos.w,
-               entity->pos.h,
-               frame->x,
-               frame->y,
-               frame->w,
-               frame->h);
+  RenderSprite(
+    e->texture, e->pos.x, e->pos.y, e->pos.w, e->pos.h, f->x, f->y, f->w, f->h);
 }

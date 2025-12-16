@@ -22,4 +22,5 @@ typedef enum Key : u8 {
 extern bool keys[KeyCount];
 
 void UpdateKey(SDL_KeyCode keyCode, bool down);
-void InitKeyboardManager(void);
+void InitKeyboardManager();
+bool SingleKeyPress(Key key);

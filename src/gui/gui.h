@@ -18,9 +18,9 @@ void RenderString(i32 x,
                   u8 alpha,
                   u32 flags,
                   i32 lineNumber,
-                  const char *const format,
+                  const char *format,
                   ...);
 
 void RenderHealthBar(i32 health);
-void RenderSmallLogo(void);
-void FreeFontCache(void);
+void RenderSmallLogo();
+void FreeFontCache();

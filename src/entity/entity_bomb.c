@@ -2,64 +2,64 @@
 
 #include "../renderer/renderer.h"
 
-static constexpr SDL_Rect bombFrames[] = {
+static constexpr SDL_Rect frame[] = {
   {265, 265, 9, 21},
 };
 
-Entity *NewBomb(void) {
-  auto bomb = NewEntity(EntityBomb);
+Entity *NewBomb() {
+  auto e = NewEntity(EntityBomb);
 
-  bomb->texture = 0;
-  bomb->data = 1;
+  e->texture = 0;
+  e->data = 1;
 
-  bomb->pos.x = 0;
-  bomb->pos.y = 0;
-  bomb->pos.w = bombFrames[0].w * 2;
-  bomb->pos.h = bombFrames[0].h * 2;
+  e->pos.x = 0;
+  e->pos.y = 0;
+  e->pos.w = frame[0].w * 2;
+  e->pos.h = frame[0].h * 2;
 
-  bomb->xa = 0;
-  bomb->ya = 0;
+  e->xa = 0;
+  e->ya = 0;
 
-  bomb->damage = 1000;
-  bomb->tickTime = 1;
+  e->damage = 1000;
+  e->tickTime = 1;
 
-  return bomb;
+  return e;
 }
 
-static void BombCalcSize(Entity *bomb, i32 *w, i32 *h) {
-  const auto scale = pow(0.90, bomb->tickTime);
+static void BombCalcSize(Entity *e, i32 *w, i32 *h) {
+  const auto scale = pow(0.90, e->tickTime);
 
-  *w = (i32)(bomb->pos.w * scale);
-  *h = (i32)(bomb->pos.h * scale);
+  *w = (i32)(e->pos.w * scale);
+  *h = (i32)(e->pos.h * scale);
 
   if (*w == 0 || *h == 0) {
-    bomb->data = 0;
+    e->data = 0;
     *w = 1;
     *h = 1;
   }
 }
 
-void BombTick(Entity *entity) {
-  entity->tickTime += entity->data;
+void BombTick(Entity *e) {
+  e->tickTime += e->data;
 
-  entity->pos.x += entity->xa * 2;
-  entity->pos.y += entity->ya * 2;
+  e->pos.x += e->xa * 2;
+  e->pos.y += e->ya * 2;
 
-  if (entity->data != 0) {
+  if (e->data != 0) {
     return;
   }
 
   SDL_Rect scaledrect;
-  scaledrect.x = entity->pos.x;
-  scaledrect.y = entity->pos.y;
-  BombCalcSize(entity, &scaledrect.w, &scaledrect.h);
+  scaledrect.x = e->pos.x;
+  scaledrect.y = e->pos.y;
+  BombCalcSize(e, &scaledrect.w, &scaledrect.h);
 
   Entity *nextEntity = nullptr;
   for (auto it = entities; it != nullptr; it = nextEntity) {
     nextEntity = it->next;
 
     if (it->type == EntityShip && SDL_HasIntersection(&it->pos, &scaledrect)) {
-      HurtEntity(it, entity->damage);
+      HurtEntity(it, e->damage);
       NewExplosion(scaledrect.x, scaledrect.y);
 
       if (player->score + 1 > player->score) {
@@ -70,22 +70,15 @@ void BombTick(Entity *entity) {
     }
   }
 
-  entity->removed = true;
+  e->removed = true;
 }
 
-void BombRender(Entity *entity) {
-  const auto frame = &bombFrames[0];
+void BombRender(Entity *e) {
+  const auto f = &frame[0];
 
   i32 width, height;
-  BombCalcSize(entity, &width, &height);
+  BombCalcSize(e, &width, &height);
 
-  RenderSprite(entity->texture,
-               entity->pos.x,
-               entity->pos.y,
-               width,
-               height,
-               frame->x,
-               frame->y,
-               frame->w,
-               frame->h);
+  RenderSprite(
+    e->texture, e->pos.x, e->pos.y, width, height, f->x, f->y, f->w, f->h);
 }

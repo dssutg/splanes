@@ -8,71 +8,71 @@ Entity *entities;
 Entity *player;
 
 Entity *NewEntity(EntityType type) {
-  Entity *entity = Emalloc(sizeof(*entity));
+  Entity *e = Emalloc(sizeof(*e));
 
-  entity->type = type;
-  entity->tickTime = 0;
-  entity->removed = false;
+  e->type = type;
+  e->tickTime = 0;
+  e->removed = false;
 
   // insert to the head of entity list
-  entity->prev = nullptr;
-  entity->next = entities;
+  e->prev = nullptr;
+  e->next = entities;
   if (entities != nullptr) {
-    entities->prev = entity; // not first element?
+    entities->prev = e; // not first element?
   }
 
-  entities = entity;
+  entities = e;
 
-  return entity;
+  return e;
 }
 
-void FreeEntity(Entity *entity) {
-  if (entity == nullptr || entities == nullptr) {
+void FreeEntity(Entity *e) {
+  if (e == nullptr || entities == nullptr) {
     return;
   }
 
-  if (entity == entities) {
-    entities = entity->next;
+  if (e == entities) {
+    entities = e->next;
   }
 
-  if (entity->next != nullptr) {
-    entity->next->prev = entity->prev;
+  if (e->next != nullptr) {
+    e->next->prev = e->prev;
   }
-  if (entity->prev != nullptr) {
-    entity->prev->next = entity->next;
+  if (e->prev != nullptr) {
+    e->prev->next = e->next;
   }
 
-  free(entity);
+  free(e);
 }
 
-void HurtEntity(Entity *entity, i32 damage) {
-  if (entity->type != EntityPlayer && entity->type != EntityEnemyPlane &&
-      entity->type != EntityShip) {
+void HurtEntity(Entity *e, i32 damage) {
+  if (e->type != EntityPlayer && e->type != EntityEnemyPlane &&
+      e->type != EntityShip) {
     return;
   }
 
-  if (entity->health < damage) {
-    entity->health = 0;
+  if (e->health < damage) {
+    e->health = 0;
   } else {
-    entity->health -= damage;
+    e->health -= damage;
   }
 
   PlaySound(SoundHurt, 100);
 }
 
-void RenderEntitySprite(const Entity *const entity) {
-  RenderSprite(entity->texture,
-               entity->pos.x,
-               entity->pos.y,
-               entity->pos.w,
-               entity->pos.h,
-               entity->crop.x,
-               entity->crop.y,
-               entity->crop.w,
-               entity->crop.h);
+void RenderEntitySprite(const Entity *e) {
+  RenderSprite(e->texture,
+               e->pos.x,
+               e->pos.y,
+               e->pos.w,
+               e->pos.h,
+               e->crop.x,
+               e->crop.y,
+               e->crop.w,
+               e->crop.h);
 }
 
-void RemoveAllEntities(void) {
+void RemoveAllEntities() {
   Entity *next = nullptr;
   for (auto entity = entities; entity != nullptr; entity = next) {
     next = entity->next;

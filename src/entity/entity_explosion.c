@@ -4,7 +4,7 @@
 #include "../sound_manager/sound_manager.h"
 #include "../util/util.h"
 
-static constexpr SDL_Rect explosionFrames[] = {
+static constexpr SDL_Rect frames[] = {
   {67, 166, 32, 32},
   {100, 166, 32, 32},
   {133, 166, 32, 32},
@@ -14,37 +14,29 @@ static constexpr SDL_Rect explosionFrames[] = {
 };
 
 Entity *NewExplosion(i32 x, i32 y) {
-  auto explosion = NewEntity(EntityExplosion);
+  auto e = NewEntity(EntityExplosion);
 
-  explosion->texture = 0;
-  explosion->pos.x = x;
-  explosion->pos.y = y;
-  explosion->pos.w = explosionFrames[0].w * 2;
-  explosion->pos.h = explosionFrames[0].h * 2;
+  e->texture = 0;
+  e->pos.x = x;
+  e->pos.y = y;
+  e->pos.w = frames[0].w * 2;
+  e->pos.h = frames[0].h * 2;
 
   PlaySound(SoundExplosion1, 100);
 
-  return explosion;
+  return e;
 }
 
-void ExplosionTick(Entity *entity) {
-  entity->tickTime++;
-  if (entity->tickTime >= ArrayLength(explosionFrames)) {
-    entity->removed = true;
+void ExplosionTick(Entity *e) {
+  e->tickTime++;
+  if (e->tickTime >= ArrayLength(frames)) {
+    e->removed = true;
   }
 }
 
-void ExplosionRender(Entity *entity) {
-  const auto frame =
-    &explosionFrames[entity->tickTime % ArrayLength(explosionFrames)];
+void ExplosionRender(Entity *e) {
+  const auto f = &frames[e->tickTime % ArrayLength(frames)];
 
-  RenderSprite(entity->texture,
-               entity->pos.x,
-               entity->pos.y,
-               entity->pos.w,
-               entity->pos.h,
-               frame->x,
-               frame->y,
-               frame->w,
-               frame->h);
+  RenderSprite(
+    e->texture, e->pos.x, e->pos.y, e->pos.w, e->pos.h, f->x, f->y, f->w, f->h);
 }

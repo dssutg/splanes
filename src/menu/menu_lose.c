@@ -5,35 +5,17 @@
 #include "../keyboard_manager/keyboard_manager.h"
 #include "../util/util.h"
 
-void MenuLoseTick(void) {
-  auto pressed = false;
+static const char *buttons[] = {
+  "RESTART GAME",
+  "EXIT",
+};
 
-  if (keys[KeyUp]) {
-    loseMenu.selectedIndex--;
-    keys[KeyUp] = false;
-  }
+constexpr i32 length = ArrayLength(buttons);
 
-  if (keys[KeyDown]) {
-    loseMenu.selectedIndex++;
-    keys[KeyDown] = false;
-  }
+void MenuLoseTick() {
+  HandleUpDownSelection(&loseMenu, length);
 
-  if (keys[KeyEnter]) {
-    pressed = true;
-    keys[KeyEnter] = false;
-  }
-
-  constexpr i32 length = 2;
-
-  if (loseMenu.selectedIndex >= length) {
-    loseMenu.selectedIndex = 0;
-  }
-
-  if (loseMenu.selectedIndex < 0) {
-    loseMenu.selectedIndex = length - 1;
-  }
-
-  if (pressed) {
+  if (SingleKeyPress(KeyEnter)) {
     switch (loseMenu.selectedIndex) {
     case 0: // Restart game
       Restart();
@@ -47,14 +29,7 @@ void MenuLoseTick(void) {
   }
 }
 
-void MenuLoseRender(void) {
-  static const char *const buttons[] = {
-    "RESTART GAME",
-    "EXIT",
-  };
-
-  constexpr i32 length = ArrayLength(buttons);
-
+void MenuLoseRender() {
   RenderString(0, 0, 40, 0xFF, 0xFF, 0x00, 0xFF, 1, -3, "YOU LOSE!");
   RenderString(0, 0, 40, 0xFF, 0xFF, 0x00, 0xFF, 1, -2, "TRY AGAIN?");
 

@@ -5,35 +5,18 @@
 #include "../renderer/renderer.h"
 #include "../util/util.h"
 
-void MenuMainTick(void) {
-  if (keys[KeyUp]) {
-    mainMenu.selectedIndex--;
-    keys[KeyUp] = false;
-  }
+static const char *buttons[] = {
+  "RESUME",
+  "ABOUT",
+  "EXIT",
+};
 
-  if (keys[KeyDown]) {
-    mainMenu.selectedIndex++;
-    keys[KeyDown] = false;
-  }
+constexpr i32 length = ArrayLength(buttons);
 
-  auto pressed = false;
+void MenuMainTick() {
+  HandleUpDownSelection(&mainMenu, length);
 
-  if (keys[KeyEnter]) {
-    pressed = true;
-    keys[KeyEnter] = false;
-  }
-
-  constexpr i32 length = 3;
-
-  if (mainMenu.selectedIndex >= length) {
-    mainMenu.selectedIndex = 0;
-  }
-
-  if (mainMenu.selectedIndex < 0) {
-    mainMenu.selectedIndex = length - 1;
-  }
-
-  if (pressed) {
+  if (SingleKeyPress(KeyEnter)) {
     switch (mainMenu.selectedIndex) {
     case 0: // Resume
       menuID = MenuNone;
@@ -51,16 +34,8 @@ void MenuMainTick(void) {
   }
 }
 
-void MenuMainRender(void) {
-  static const char *const buttons[] = {
-    "RESUME",
-    "ABOUT",
-    "EXIT",
-  };
-
+void MenuMainRender() {
   constexpr i32 size = 40;
-
-  constexpr i32 length = ArrayLength(buttons);
 
   for (i32 i = 0; i < length; i++) {
     if (mainMenu.selectedIndex == i) {

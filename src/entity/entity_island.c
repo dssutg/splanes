@@ -2,48 +2,41 @@
 
 #include "../renderer/renderer.h"
 
-static constexpr SDL_Rect islandFrames[] = {
+static constexpr SDL_Rect frames[] = {
   {100, 496, 64, 65},
   {165, 496, 64, 65},
   {230, 496, 64, 65},
 };
 
-Entity *NewIsland(void) {
-  auto island = NewEntity(EntityIsland);
+Entity *NewIsland() {
+  auto e = NewEntity(EntityIsland);
 
-  island->texture = 0;
-  island->data = (u32)(rand()) % 3;
+  e->texture = 0;
+  e->data = (u32)(rand()) % 3;
 
-  island->pos.w = islandFrames[island->data].w * 3;
-  island->pos.h = islandFrames[island->data].h * 3;
-  island->pos.x = rand() % WindowWidth;
-  island->pos.y = -(rand() % WindowHeight) - island->pos.h;
+  e->pos.w = frames[e->data].w * 3;
+  e->pos.h = frames[e->data].h * 3;
+  e->pos.x = rand() % WindowWidth;
+  e->pos.y = -(rand() % WindowHeight) - e->pos.h;
 
-  island->xa = 0;
-  island->ya = 1;
+  e->xa = 0;
+  e->ya = 1;
 
-  return island;
+  return e;
 }
 
-void IslandTick(Entity *entity) {
-  entity->pos.x += entity->xa * 10;
-  entity->pos.y += entity->ya * 10;
+void IslandTick(Entity *e) {
+  e->pos.x += e->xa * 10;
+  e->pos.y += e->ya * 10;
 
-  if (entity->pos.y >= WindowHeight) {
-    entity->removed = true;
+  if (e->pos.y >= WindowHeight) {
+    e->removed = true;
   }
 }
 
-void IslandRender(Entity *entity) {
-  const auto frame = &islandFrames[entity->data];
+void IslandRender(Entity *e) {
+  const auto f = &frames[e->data];
 
-  RenderSprite(entity->texture,
-               entity->pos.x,
-               entity->pos.y,
-               entity->pos.w,
-               entity->pos.h,
-               frame->x,
-               frame->y,
-               frame->w,
-               frame->h);
+  RenderSprite(
+    e->texture, e->pos.x, e->pos.y, e->pos.w, e->pos.h, f->x, f->y, f->w, f->h);
 }

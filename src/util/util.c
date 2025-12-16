@@ -1,12 +1,15 @@
+#include <asm-generic/errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 
 #include "util.h"
 
+typedef unsigned long Size;
+
 const char *programName = "splanes";
 
-void Fatalf(const char *const format, ...) {
+void Fatalf(const char *format, ...) {
   fprintf(stderr, "%s: ", programName);
 
   va_list args;
@@ -19,8 +22,12 @@ void Fatalf(const char *const format, ...) {
   exit(EXIT_FAILURE);
 }
 
-void *Erealloc(void *data, size_t newByteCount) {
-  auto newData = realloc(data, newByteCount);
+void *Erealloc(void *data, i64 newByteCount) {
+  if (newByteCount < 0) {
+    newByteCount = 0;
+  }
+
+  auto newData = realloc(data, (Size)newByteCount);
 
   if (newData == nullptr) {
     Fatalf("out of memory");
@@ -29,6 +36,6 @@ void *Erealloc(void *data, size_t newByteCount) {
   return newData;
 }
 
-void *Emalloc(size_t byteCount) {
+void *Emalloc(i64 byteCount) {
   return Erealloc(nullptr, byteCount);
 }

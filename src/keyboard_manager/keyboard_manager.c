@@ -34,8 +34,8 @@ static KeyMapEntry keyMap[] = {
 };
 
 static int CompareKeyMapEntries(const void *a, const void *b) {
-  const KeyMapEntry *const aEntry = a;
-  const KeyMapEntry *const bEntry = b;
+  const KeyMapEntry *aEntry = a;
+  const KeyMapEntry *bEntry = b;
 
   if (aEntry->keyCode < bEntry->keyCode) {
     return -1;
@@ -48,21 +48,27 @@ static int CompareKeyMapEntries(const void *a, const void *b) {
   return 0;
 }
 
-void InitKeyboardManager(void) {
+void InitKeyboardManager() {
   qsort(keyMap, ArrayLength(keyMap), sizeof(keyMap[0]), CompareKeyMapEntries);
 }
 
 void UpdateKey(SDL_KeyCode keyCode, bool down) {
   const KeyMapEntry entryKey = {.keyCode = keyCode};
 
-  const KeyMapEntry *const entry = bsearch(&entryKey,
-                                           keyMap,
-                                           ArrayLength(keyMap),
-                                           sizeof(keyMap[0]),
-                                           CompareKeyMapEntries);
+  const KeyMapEntry *entry = bsearch(&entryKey,
+                                     keyMap,
+                                     ArrayLength(keyMap),
+                                     sizeof(keyMap[0]),
+                                     CompareKeyMapEntries);
   if (entry == nullptr) {
     return;
   }
 
   keys[entry->key] = down;
+}
+
+bool SingleKeyPress(Key key) {
+  auto pressed = keys[key];
+  keys[key] = false;
+  return pressed;
 }

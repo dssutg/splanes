@@ -48,7 +48,7 @@ void RenderSprite(i32 texture,
   SDL_RenderCopy(renderer, textures[texture], &src, &dest);
 }
 
-SDL_Texture *LoadTexture(const char *const filename) {
+SDL_Texture *LoadTexture(const char *filename) {
   auto bitmap = IMG_Load(filename);
   if (bitmap == nullptr) {
     Fatalf("%s", IMG_GetError());
@@ -64,7 +64,7 @@ SDL_Texture *LoadTexture(const char *const filename) {
   return texture;
 }
 
-void LoadTextures(void) {
+void LoadTextures() {
   textures[0] = LoadTexture("assets/sprites/sprites.png");
 }
 

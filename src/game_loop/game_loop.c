@@ -18,7 +18,7 @@ bool running = true;
 i32 layer1;
 i32 layer2;
 
-void Reset(void) {
+void Reset() {
   player = NewPlayer();
 
   layer1 = -WindowHeight;
@@ -34,12 +34,12 @@ void Reset(void) {
   PlayMusic(MusicBackground0, 70);
 }
 
-void Restart(void) {
+void Restart() {
   RemoveAllEntities();
   Reset();
 }
 
-static void Tick(void) {
+static void Tick() {
   if (keys[KeyPause]) {
     keys[KeyPause] = false;
 
@@ -110,7 +110,7 @@ static void RenderLayer(i32 offsetY) {
   }
 }
 
-static void Render(void) {
+static void Render() {
   RenderLayer(layer1);
   RenderLayer(layer2);
 
@@ -148,7 +148,7 @@ static void Render(void) {
   RenderMenu();
 }
 
-static void DoGameLoop(void) {
+static void DoGameLoop() {
   while (running) {
     SDL_Event event;
 
@@ -180,7 +180,7 @@ static void DoGameLoop(void) {
   }
 }
 
-void RunGame(void) {
+void RunGame() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0 || TTF_Init() != 0 ||
       SDL_Init(SDL_INIT_AUDIO) == -1 ||
       Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {

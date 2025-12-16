@@ -5,6 +5,4 @@ int main(int, char *argv[]) {
   programName = argv[0];
 
   RunGame();
-
-  return 0;
 }

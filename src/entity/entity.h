@@ -9,7 +9,7 @@ constexpr auto MaxPlayerHealth = 100;
 constexpr auto PlayerMaxBombTickTime = 50;
 
 // Entity types
-typedef enum EntityType : u8 {
+typedef enum : u8 {
   EntityPlayer,
   EntityEnemyPlane,
   EntityBullet,
@@ -38,7 +38,7 @@ typedef struct Entity {
   u32 tickTime;
 
   // EntityBullet
-  i32 ownerType; // entity type that spawned this bullet
+  EntityType ownerType; // entity type that spawned this bullet
 
   // EntityPlayer
   u64 score;
@@ -50,9 +50,9 @@ typedef struct Entity {
 } Entity;
 
 // Entity polymorphic dispatch table entry
-typedef struct EntityTableEntry {
-  void (*Tick)(Entity *entity);
-  void (*Render)(Entity *entity);
+typedef struct {
+  void (*Tick)(Entity *e);
+  void (*Render)(Entity *e);
   const i32 zIndex;
 } EntityTableEntry;
 
@@ -67,56 +67,56 @@ extern Entity *player;
 
 // Base entity method
 Entity *NewEntity(EntityType type);
-void FreeEntity(Entity *entity);
-void HurtEntity(Entity *entity, i32 damage);
-void RenderEntitySprite(const Entity *const entity);
-void RemoveAllEntities(void);
+void FreeEntity(Entity *e);
+void HurtEntity(Entity *e, i32 damage);
+void RenderEntitySprite(const Entity *e);
+void RemoveAllEntities();
 
 // Player entity methods
-Entity *NewPlayer(void);
+Entity *NewPlayer();
 void PlayerDoDie(Entity *player);
 void HealPlayer(i32 healPoints);
-void PlayerTick(Entity *entity);
-void PlayerRender(Entity *entity);
+void PlayerTick(Entity *e);
+void PlayerRender(Entity *e);
 
 // Bomb entity methods
-Entity *NewBomb(void);
-void BombTick(Entity *entity);
-void BombRender(Entity *entity);
+Entity *NewBomb();
+void BombTick(Entity *e);
+void BombRender(Entity *e);
 
 // Bullet entity methods
-Entity *NewBullet(i32 type,
+Entity *NewBullet(EntityType type,
                   i32 x,
                   i32 y,
                   i32 xa,
                   i32 ya,
-                  i32 ownertype,
+                  EntityType ownertype,
                   i32 damage,
                   u32 bulletframeno);
-void BulletTick(Entity *entity);
-void BulletRender(Entity *entity);
+void BulletTick(Entity *e);
+void BulletRender(Entity *e);
 
 // Enemy plane entity methods
-Entity *NewEnemyPlane(void);
-void EnemyPlaneTick(Entity *entity);
-void EnemyPlaneRender(Entity *entity);
+Entity *NewEnemyPlane();
+void EnemyPlaneTick(Entity *e);
+void EnemyPlaneRender(Entity *e);
 
 // Explosion entity methods
 Entity *NewExplosion(i32 x, i32 y);
-void ExplosionTick(Entity *entity);
-void ExplosionRender(Entity *entity);
+void ExplosionTick(Entity *e);
+void ExplosionRender(Entity *e);
 
 // Healer entity methods
-Entity *NewHealer(void);
-void HealerTick(Entity *entity);
-void HealerRender(Entity *entity);
+Entity *NewHealer();
+void HealerTick(Entity *e);
+void HealerRender(Entity *e);
 
 // Island entity methods
-Entity *NewIsland(void);
-void IslandTick(Entity *entity);
-void IslandRender(Entity *entity);
+Entity *NewIsland();
+void IslandTick(Entity *e);
+void IslandRender(Entity *e);
 
 // Ship entity methods
-Entity *NewShip(void);
-void ShipTick(Entity *entity);
-void ShipRender(Entity *entity);
+Entity *NewShip();
+void ShipTick(Entity *e);
+void ShipRender(Entity *e);

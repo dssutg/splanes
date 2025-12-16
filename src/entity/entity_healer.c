@@ -2,51 +2,44 @@
 
 #include "../renderer/renderer.h"
 
-static constexpr SDL_Rect healerFrames[] = {
+static constexpr SDL_Rect frames[] = {
   {166, 265, 29, 15},
 };
 
-Entity *NewHealer(void) {
-  auto healer = NewEntity(EntityHealer);
+Entity *NewHealer() {
+  auto e = NewEntity(EntityHealer);
 
-  healer->texture = 0;
-  healer->data = 0;
+  e->texture = 0;
+  e->data = 0;
 
-  healer->pos.w = healerFrames[healer->data].w * 2;
-  healer->pos.h = healerFrames[healer->data].h * 2;
-  healer->pos.x = rand() % WindowWidth;
-  healer->pos.y = -(rand() % WindowHeight) - healer->pos.h;
+  e->pos.w = frames[e->data].w * 2;
+  e->pos.h = frames[e->data].h * 2;
+  e->pos.x = rand() % WindowWidth;
+  e->pos.y = -(rand() % WindowHeight) - e->pos.h;
 
-  healer->xa = 0;
-  healer->ya = 1;
+  e->xa = 0;
+  e->ya = 1;
 
-  return healer;
+  return e;
 }
 
-void HealerTick(Entity *entity) {
-  entity->pos.x += entity->xa * 10;
-  entity->pos.y += entity->ya * 10;
+void HealerTick(Entity *e) {
+  e->pos.x += e->xa * 10;
+  e->pos.y += e->ya * 10;
 
-  if (entity->pos.y >= WindowHeight) {
-    entity->removed = true;
+  if (e->pos.y >= WindowHeight) {
+    e->removed = true;
   }
 
-  if (SDL_HasIntersection(&entity->pos, &player->pos)) {
+  if (SDL_HasIntersection(&e->pos, &player->pos)) {
     HealPlayer(20);
-    entity->removed = true;
+    e->removed = true;
   }
 }
 
-void HealerRender(Entity *entity) {
-  const auto frame = &healerFrames[entity->data];
+void HealerRender(Entity *e) {
+  const auto f = &frames[e->data];
 
-  RenderSprite(entity->texture,
-               entity->pos.x,
-               entity->pos.y,
-               entity->pos.w,
-               entity->pos.h,
-               frame->x,
-               frame->y,
-               frame->w,
-               frame->h);
+  RenderSprite(
+    e->texture, e->pos.x, e->pos.y, e->pos.w, e->pos.h, f->x, f->y, f->w, f->h);
 }

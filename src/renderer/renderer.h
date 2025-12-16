@@ -26,8 +26,8 @@ void RenderSprite(i32 texture,
                   i32 cropWidth,
                   i32 cropHeight);
 
-SDL_Texture *LoadTexture(const char *const filename);
+SDL_Texture *LoadTexture(const char *filename);
 
-void LoadTextures(void);
+void LoadTextures();
 
 void RenderRect(i32 x, i32 y, i32 width, i32 height, u8 red, u8 green, u8 blue);

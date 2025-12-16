@@ -1,23 +1,24 @@
 #pragma once
 
-#include <stddef.h>
-#include <stdint.h>
+#define SizeOf(x) ((i64)sizeof(x))
 
-#define ArrayLength(array) (sizeof(array) / sizeof((array)[0]))
+#define ArrayLength(array) (SizeOf(array) / SizeOf((array)[0]))
 
 extern const char *programName;
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-typedef int8_t i8;
-typedef int16_t i16;
-typedef int32_t i32;
-typedef int64_t i64;
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long u64;
+
+typedef signed char i8;
+typedef signed short i16;
+typedef signed int i32;
+typedef signed long i64;
+
 typedef float f32;
 typedef double f64;
 
-void Fatalf(const char *const format, ...);
-void *Erealloc(void *data, size_t newByteCount);
-void *Emalloc(size_t byteCount);
+void Fatalf(const char *format, ...);
+void *Erealloc(void *data, i64 newByteCount);
+void *Emalloc(i64 byteCount);

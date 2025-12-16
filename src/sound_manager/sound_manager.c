@@ -7,7 +7,7 @@
 static Mix_Chunk *sounds[SoundCount];
 static Mix_Music *musicTracks[MusicCount];
 
-static Mix_Chunk *NewSoundEffect(const char *const filename) {
+static Mix_Chunk *NewSoundEffect(const char *filename) {
   auto soundEffect = Mix_LoadWAV(filename);
 
   if (soundEffect == nullptr) {
@@ -17,7 +17,7 @@ static Mix_Chunk *NewSoundEffect(const char *const filename) {
   return soundEffect;
 }
 
-static Mix_Music *NewMusicTrack(const char *const filename) {
+static Mix_Music *NewMusicTrack(const char *filename) {
   auto music = Mix_LoadMUS(filename);
 
   if (music == nullptr) {
@@ -42,7 +42,7 @@ void PlayMusic(MusicID musicID, i32 volume) {
   }
 }
 
-void InitSoundManager(void) {
+void InitSoundManager() {
   musicTracks[MusicBackground0] = NewMusicTrack("assets/music/bg_0.ogg");
 
   sounds[SoundHurt] = NewSoundEffect("assets/sfx/hurt.wav");

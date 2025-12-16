@@ -3,7 +3,7 @@
 #include "../util/util.h"
 
 // Menus
-typedef enum MenuType : u8 {
+typedef enum : u8 {
   MenuNone,
   MenuMain,
   MenuExit,
@@ -11,13 +11,13 @@ typedef enum MenuType : u8 {
   MenuLose,
 } MenuType;
 
-typedef struct Menu {
+typedef struct {
   i32 selectedIndex;
 } Menu;
 
-typedef struct MenuTableEntry {
-  void (*Tick)(void);
-  void (*Render)(void);
+typedef struct {
+  void (*Tick)();
+  void (*Render)();
 } MenuTableEntry;
 
 extern const MenuTableEntry menuTable[];
@@ -31,25 +31,26 @@ extern MenuType prevMenuID;
 extern MenuType menuID;
 
 // Base Menu methods
-void TickMenu(void);
-void RenderMenu(void);
+void TickMenu();
+void RenderMenu();
+void HandleUpDownSelection(Menu *menu, i32 length);
 
 // About Menu methods
-void MenuAboutTick(void);
-void MenuAboutRender(void);
+void MenuAboutTick();
+void MenuAboutRender();
 
 // Exit Menu methods
-void MenuExitTick(void);
-void MenuExitRender(void);
+void MenuExitTick();
+void MenuExitRender();
 
 // Lose Menu methods
-void MenuLoseTick(void);
-void MenuLoseRender(void);
+void MenuLoseTick();
+void MenuLoseRender();
 
 // Main Menu methods
-void MenuMainTick(void);
-void MenuMainRender(void);
+void MenuMainTick();
+void MenuMainRender();
 
 // None Menu methods
-void MenuNoneTick(void);
-void MenuNoneRender(void);
+void MenuNoneTick();
+void MenuNoneRender();

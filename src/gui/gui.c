@@ -7,18 +7,18 @@
 #include "../util/util.h"
 #include "../renderer/renderer.h"
 
-typedef struct FontCacheEntry {
+typedef struct {
   TTF_Font *font;
   i32 size;
 } FontCacheEntry;
 
 static FontCacheEntry *fontCache;
-static size_t fontCacheLength;
-static size_t fontCacheCapacity;
+static i64 fontCacheLength;
+static i64 fontCacheCapacity;
 
 static TTF_Font *LoadFont(i32 size) {
   // Find the font with the required size in the loaded font cache.
-  for (size_t i = 0; i < fontCacheLength; i++) {
+  for (i64 i = 0; i < fontCacheLength; i++) {
     const auto entry = &fontCache[i];
     if (entry->size == size) {
       return entry->font;
@@ -32,7 +32,7 @@ static TTF_Font *LoadFont(i32 size) {
     } else {
       fontCacheCapacity *= 2;
     }
-    fontCache = Erealloc(fontCache, fontCacheCapacity * sizeof(fontCache[0]));
+    fontCache = Erealloc(fontCache, fontCacheCapacity * SizeOf(fontCache[0]));
   }
 
   // Reserve the new font entry.
@@ -95,7 +95,7 @@ void RenderString(i32 x,
                   u8 alpha,
                   u32 flags,
                   i32 lineNumber,
-                  const char *const format,
+                  const char *format,
                   ...) {
   char text[4096];
   va_list args;
@@ -194,7 +194,7 @@ void RenderHealthBar(i32 health) {
   }
 }
 
-void RenderSmallLogo(void) {
+void RenderSmallLogo() {
   constexpr i32 cropWidth = 115;
   constexpr i32 cropHeight = 58;
 
