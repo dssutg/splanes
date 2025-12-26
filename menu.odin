@@ -1,7 +1,5 @@
 #+feature dynamic-literals
-package menu
-
-import "../kbd"
+package main
 
 // Menus
 Menu_Type :: enum u8 {
@@ -19,14 +17,6 @@ Menu :: struct {
 Menu_Table_Entry :: struct {
 	tick:   proc(),
 	render: proc(),
-}
-
-menu_table := map[Menu_Type]Menu_Table_Entry {
-	.None = {tick = menu_none_tick, render = menu_none_render},
-	.Main = {tick = menu_main_tick, render = menu_main_render},
-	.Exit = {tick = menu_exit_tick, render = menu_exit_render},
-	.About = {tick = menu_about_tick, render = menu_about_render},
-	.Lose = {tick = menu_lose_tick, render = menu_lose_render},
 }
 
 prev_menu_ID := Menu_Type.None
@@ -49,11 +39,11 @@ menu_none_render :: proc() {
 }
 
 handle_up_down_selection :: proc(menu: ^Menu, length: int) {
-	if kbd.single_key_press(.Up) {
+	if single_key_press(.Up) {
 		menu.selected_index -= 1
 	}
 
-	if kbd.single_key_press(.Down) {
+	if single_key_press(.Down) {
 		menu.selected_index += 1
 	}
 
@@ -64,4 +54,12 @@ handle_up_down_selection :: proc(menu: ^Menu, length: int) {
 	if menu.selected_index < 0 {
 		menu.selected_index = length - 1
 	}
+}
+
+menu_table := [Menu_Type]Menu_Table_Entry {
+	.None = {tick = menu_none_tick, render = menu_none_render},
+	.Main = {tick = menu_main_tick, render = menu_main_render},
+	.Exit = {tick = menu_exit_tick, render = menu_exit_render},
+	.About = {tick = menu_about_tick, render = menu_about_render},
+	.Lose = {tick = menu_lose_tick, render = menu_lose_render},
 }

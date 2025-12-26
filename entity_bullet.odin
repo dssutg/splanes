@@ -1,8 +1,6 @@
-package entity
+package main
 
 import SDL "vendor:sdl2"
-
-import "../gfx"
 
 bullet_frames := []SDL.Rect{{1, 166, 32, 32}, {34, 199, 32, 32}}
 
@@ -62,12 +60,12 @@ bullet_tick :: proc(e: ^Entity) {
 		}
 	}
 
-	window_rect := gfx.Window_Rect
+	window_rect := Window_Rect
 	if dead || !SDL.HasIntersection(&e.pos, &window_rect) {
 		e.removed = true
 	}
 }
 
 bullet_render :: proc(e: ^Entity) {
-	gfx.render_sprite(e.texture, e.pos, bullet_frames[e.data])
+	render_sprite(e.texture, e.pos, bullet_frames[e.data])
 }

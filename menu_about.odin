@@ -1,16 +1,11 @@
-package menu
+package main
 
 import SDL "vendor:sdl2"
 
-import "../gfx"
-import "../kbd"
-
 about_menu: Menu
 
-restart := proc() {}
-
 menu_about_tick :: proc() {
-	if kbd.single_key_press(.Enter) {
+	if single_key_press(.Enter) {
 		menu_ID = .Main
 	}
 }
@@ -31,6 +26,6 @@ menu_about_render :: proc() {
 		if i == len(lines) - 1 {
 			color = {160, 160, 0, 255}
 		}
-		gfx.render_string(0, 0, 40, color, true, i32(i - len(lines) + 1), "%v", line)
+		render_string(0, 0, 40, color, true, i32(i - len(lines) + 1), "%v", line)
 	}
 }

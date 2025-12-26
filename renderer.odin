@@ -1,9 +1,7 @@
-package gfx
+package main
 
 import SDL "vendor:sdl2"
 import SDL_Image "vendor:sdl2/image"
-
-import "../util"
 
 Window_Delay_Milliseconds :: 50
 
@@ -29,13 +27,13 @@ render_sprite :: proc(texture: i32, dest, src: SDL.Rect) {
 load_texture :: proc(filename: string) -> ^SDL.Texture {
 	bitmap := SDL_Image.Load(cstring(raw_data(filename)))
 	if bitmap == nil {
-		util.fatalf("can't load %v: %v", filename, SDL_Image.GetError())
+		fatalf("can't load %v: %v", filename, SDL_Image.GetError())
 	}
 	defer SDL.FreeSurface(bitmap)
 
 	texture := SDL.CreateTextureFromSurface(renderer, bitmap)
 	if texture == nil {
-		util.fatalf("can't create texture from %v: %v", filename, SDL.GetError())
+		fatalf("can't create texture from %v: %v", filename, SDL.GetError())
 	}
 
 	return texture

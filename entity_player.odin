@@ -1,10 +1,6 @@
-package entity
+package main
 
 import "core:math/rand"
-
-import "../gfx"
-import "../kbd"
-import "../menu"
 
 new_player :: proc() -> ^Entity {
 	e := new_entity(.Player)
@@ -18,8 +14,8 @@ new_player :: proc() -> ^Entity {
 
 	e.pos.w = e.crop.w * 2
 	e.pos.h = e.crop.h * 2
-	e.pos.x = (gfx.Window_Width - e.pos.w) / 2
-	e.pos.y = gfx.Window_Height - e.pos.h - 40
+	e.pos.x = (Window_Width - e.pos.w) / 2
+	e.pos.y = Window_Height - e.pos.h - 40
 
 	e.has_shot = false
 	e.has_bombed = false
@@ -48,7 +44,7 @@ player_do_die :: proc(e: ^Entity) {
 	}
 
 	if e.death_time > 10 {
-		menu.menu_ID = .Lose
+		menu_ID = .Lose
 	}
 }
 
@@ -67,15 +63,15 @@ player_tick :: proc(e: ^Entity) {
 
 	e.xa = 0
 
-	if kbd.keys[.Left] {
+	if keys[.Left] {
 		e.xa = -20
 	}
 
-	if kbd.keys[.Right] {
+	if keys[.Right] {
 		e.xa = 20
 	}
 
-	if kbd.keys[.Bomb] && !e.has_bombed {
+	if keys[.Bomb] && !e.has_bombed {
 		e.has_bombed = true
 		e.bomb_tick_time = 0
 
@@ -92,7 +88,7 @@ player_tick :: proc(e: ^Entity) {
 		}
 	}
 
-	if kbd.keys[.Shoot] && !e.has_shot {
+	if keys[.Shoot] && !e.has_shot {
 		e.has_shot = true
 
 		damage: i32 : 50
@@ -111,8 +107,8 @@ player_tick :: proc(e: ^Entity) {
 	xn := e.pos.x + e.xa
 	yn := e.pos.y + e.ya
 
-	if xn + e.pos.w >= gfx.Window_Width + 1 {
-		xn = gfx.Window_Width - e.pos.w
+	if xn + e.pos.w >= Window_Width + 1 {
+		xn = Window_Width - e.pos.w
 	}
 
 	if xn < 0 {

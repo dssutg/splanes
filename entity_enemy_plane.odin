@@ -1,10 +1,8 @@
-package entity
+package main
 
 import "core:math/rand"
 
 import SDL "vendor:sdl2"
-
-import "../gfx"
 
 enemy_plane_frames := []SDL.Rect {
 	{1, 1, 32, 32},
@@ -23,8 +21,8 @@ new_enemy_plane :: proc() -> ^Entity {
 
 	e.pos.w = e.crop.w * 2
 	e.pos.h = e.crop.h * 2
-	e.pos.x = rand.int31_max(gfx.Window_Width)
-	e.pos.y = -rand.int31_max(gfx.Window_Height) - e.pos.h
+	e.pos.x = rand.int31_max(Window_Width)
+	e.pos.y = -rand.int31_max(Window_Height) - e.pos.h
 
 	e.xa = 0
 	e.ya = 1
@@ -61,7 +59,7 @@ enemy_plane_tick :: proc(e: ^Entity) {
 	e.pos.x += e.xa * 20
 	e.pos.y += e.ya * 20
 
-	if e.pos.y >= gfx.Window_Height {
+	if e.pos.y >= Window_Height {
 		e.removed = true
 	}
 

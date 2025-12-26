@@ -1,9 +1,6 @@
-package entity
+package main
 
 import SDL "vendor:sdl2"
-
-import "../gfx"
-import "../snd"
 
 // Shared player properties
 Max_Player_Health :: 100
@@ -111,11 +108,11 @@ hurt_entity :: proc(e: ^Entity, damage: i32) {
 		e.health -= damage
 	}
 
-	snd.play_sound(.Hurt, 100)
+	play_sound(SoundHurt, 100)
 }
 
 render_entity_sprite :: proc(e: ^Entity) {
-	gfx.render_sprite(e.texture, e.pos, e.crop)
+	render_sprite(e.texture, e.pos, e.crop)
 }
 
 remove_all_entities :: proc() {
@@ -124,4 +121,15 @@ remove_all_entities :: proc() {
 		next = e.next
 		free_entity(e)
 	}
+}
+
+entity_table := [Entity_Type]Entity_Table_Entry {
+	.Player = {tick = player_tick, render = player_render, z_index = 2},
+	.Enemy_Plane = {tick = enemy_plane_tick, render = enemy_plane_render, z_index = 2},
+	.Bullet = {tick = bullet_tick, render = bullet_render, z_index = 2},
+	.Bomb = {tick = bomb_tick, render = bomb_render, z_index = 2},
+	.Island = {tick = island_tick, render = island_render, z_index = 0},
+	.Explosion = {tick = explosion_tick, render = explosion_render, z_index = 2},
+	.Ship = {tick = ship_tick, render = ship_render, z_index = 1},
+	.Healer = {tick = healer_tick, render = healer_render, z_index = 2},
 }

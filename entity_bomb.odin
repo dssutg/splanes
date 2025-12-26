@@ -1,10 +1,8 @@
-package entity
+package main
 
 import "core:math"
 
 import SDL "vendor:sdl2"
-
-import "../gfx"
 
 bomb_frames := []SDL.Rect{{265, 265, 9, 21}}
 
@@ -72,5 +70,5 @@ bomb_tick :: proc(e: ^Entity) {
 
 bomb_render :: proc(e: ^Entity) {
 	w, h := bomb_calc_size(e)
-	gfx.render_sprite(e.texture, {e.pos.x, e.pos.y, w, h}, bomb_frames[0])
+	render_sprite(e.texture, {e.pos.x, e.pos.y, w, h}, bomb_frames[0])
 }

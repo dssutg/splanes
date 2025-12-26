@@ -1,9 +1,6 @@
-package entity
+package main
 
 import SDL "vendor:sdl2"
-
-import "../gfx"
-import "../snd"
 
 explosion_frames := []SDL.Rect {
 	{67, 166, 32, 32},
@@ -22,7 +19,7 @@ new_explosion :: proc(x, y: i32) -> ^Entity {
 	frame := explosion_frames[0]
 	e.pos = {x, y, frame.w * 2, frame.h * 2}
 
-	snd.play_sound(.Explosion1, 100)
+	play_sound(SoundExplosion1, 100)
 
 	return e
 }
@@ -36,5 +33,5 @@ explosion_tick :: proc(e: ^Entity) {
 
 explosion_render :: proc(e: ^Entity) {
 	frame_no := e.tick_time % i32(len(explosion_frames))
-	gfx.render_sprite(e.texture, e.pos, explosion_frames[frame_no])
+	render_sprite(e.texture, e.pos, explosion_frames[frame_no])
 }

@@ -1,10 +1,8 @@
-package entity
+package main
 
 import "core:math/rand"
 
 import SDL "vendor:sdl2"
-
-import "../gfx"
 
 ship_frames := []SDL.Rect{{505, 298, 41, 197}, {463, 298, 41, 197}}
 
@@ -17,8 +15,8 @@ new_ship :: proc() -> ^Entity {
 
 	e.pos.w = frame.w * 1
 	e.pos.h = frame.h * 1
-	e.pos.x = rand.int31_max(gfx.Window_Width)
-	e.pos.y = -rand.int31_max(gfx.Window_Height) - e.pos.h
+	e.pos.x = rand.int31_max(Window_Width)
+	e.pos.y = -rand.int31_max(Window_Height) - e.pos.h
 
 	e.xa = 0
 	e.ya = 1
@@ -45,12 +43,12 @@ ship_tick :: proc(e: ^Entity) {
 	e.pos.x += e.xa * 11
 	e.pos.y += e.ya * 11
 
-	if e.pos.y >= gfx.Window_Height {
+	if e.pos.y >= Window_Height {
 		e.removed = true
 	}
 }
 
 ship_render :: proc(e: ^Entity) {
 	frame_no := e.tick_time / 5 % i32(len(ship_frames))
-	gfx.render_sprite(e.texture, e.pos, ship_frames[frame_no])
+	render_sprite(e.texture, e.pos, ship_frames[frame_no])
 }

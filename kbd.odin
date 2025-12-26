@@ -1,5 +1,5 @@
 #+feature dynamic-literals
-package kbd
+package main
 
 import SDL "vendor:sdl2"
 
@@ -17,7 +17,7 @@ Key :: enum u8 {
 	Bomb,
 }
 
-keys: map[Key]bool
+keys: [Key]bool
 
 // Default key map entries.
 key_map := map[SDL.Keycode]Key {

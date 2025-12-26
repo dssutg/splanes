@@ -1,12 +1,10 @@
-package gfx
+package main
 
 import "core:fmt"
 import "core:strings"
 
 import SDL "vendor:sdl2"
 import SDL_TTF "vendor:sdl2/ttf"
-
-import "../util"
 
 Font_Cache_Entry :: struct {
 	font: ^SDL_TTF.Font,
@@ -25,7 +23,7 @@ load_font :: proc(size: i32) -> ^SDL_TTF.Font {
 
 	font := SDL_TTF.OpenFont("assets/fonts/OpenSans-Bold.ttf", size)
 	if font == nil {
-		util.fatalf("can't open font file: %v", SDL.GetError())
+		fatalf("can't open font file: %v", SDL.GetError())
 	}
 
 	// Add the new font to the font cache
@@ -84,7 +82,7 @@ render_string :: proc(
 
 	font_surface := SDL_TTF.RenderText_Blended(font, text, color)
 	if font_surface == nil {
-		util.fatalf("can't get font surface: %v", SDL.GetError())
+		fatalf("can't get font surface: %v", SDL.GetError())
 	}
 	defer SDL.FreeSurface(font_surface)
 

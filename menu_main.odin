@@ -1,9 +1,6 @@
-package menu
+package main
 
 import SDL "vendor:sdl2"
-
-import "../gfx"
-import "../kbd"
 
 main_menu: Menu
 
@@ -12,7 +9,7 @@ main_nuttons :: []string{"RESUME", "ABOUT", "EXIT"}
 menu_main_tick :: proc() {
 	handle_up_down_selection(&main_menu, len(main_nuttons))
 
-	if kbd.single_key_press(.Enter) {
+	if single_key_press(.Enter) {
 		switch main_menu.selected_index {
 		case 0:
 			// Resume
@@ -33,7 +30,7 @@ menu_main_render :: proc() {
 
 	for button, i in main_nuttons {
 		if main_menu.selected_index == i {
-			gfx.render_string(
+			render_string(
 				0,
 				0,
 				size,
@@ -44,7 +41,7 @@ menu_main_render :: proc() {
 				button,
 			)
 		} else {
-			gfx.render_string(
+			render_string(
 				0,
 				0,
 				size,
@@ -64,8 +61,8 @@ menu_main_render :: proc() {
 	dest: SDL.Rect
 	dest.w = crop.w * scale
 	dest.h = crop.h * scale
-	dest.x = (gfx.Window_Width - dest.w) / 2
-	dest.y = (gfx.Window_Height + (size + 50) * (-1 - i32(len(main_nuttons)) + 1)) / 2 - dest.h
+	dest.x = (Window_Width - dest.w) / 2
+	dest.y = (Window_Height + (size + 50) * (-1 - i32(len(main_nuttons)) + 1)) / 2 - dest.h
 
-	gfx.render_sprite(0, dest, crop)
+	render_sprite(0, dest, crop)
 }
