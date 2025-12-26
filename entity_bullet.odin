@@ -35,7 +35,10 @@ bullet_tick :: proc(e: ^Entity) {
 
 	dead := false
 
-	for other := entities; other != nil; other = other.next {
+	for &other in entity_pool {
+		if other.type == .None {
+			continue
+		}
 		can_collide :=
 			(e.owner_type == .Player && other.type == .Enemy_Plane) ||
 			(e.owner_type == .Enemy_Plane && other.type == .Player)
@@ -49,7 +52,7 @@ bullet_tick :: proc(e: ^Entity) {
 		}
 
 		dead = true
-		hurt_entity(other, e.damage)
+		hurt_entity(&other, e.damage)
 		if other.type == .Player {
 			new_explosion(e.pos.x, e.pos.y)
 			continue
@@ -62,7 +65,7 @@ bullet_tick :: proc(e: ^Entity) {
 
 	window_rect := Window_Rect
 	if dead || !SDL.HasIntersection(&e.pos, &window_rect) {
-		e.removed = true
+		remove_entity(e)
 	}
 }
 

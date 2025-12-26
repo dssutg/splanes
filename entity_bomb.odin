@@ -54,18 +54,16 @@ bomb_tick :: proc(e: ^Entity) {
 	scaled_rect.y = e.pos.y
 	scaled_rect.w, scaled_rect.h = bomb_calc_size(e)
 
-	next_entity: ^Entity = nil
-	for it := entities; it != nil; it = next_entity {
-		next_entity = it.next
+	for &it in entity_pool {
 		if it.type == .Ship && SDL.HasIntersection(&it.pos, &scaled_rect) {
-			hurt_entity(it, e.damage)
+			hurt_entity(&it, e.damage)
 			new_explosion(scaled_rect.x, scaled_rect.y)
 			player.score += 1
 			break
 		}
 	}
 
-	e.removed = true
+	remove_entity(e)
 }
 
 bomb_render :: proc(e: ^Entity) {

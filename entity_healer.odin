@@ -28,12 +28,12 @@ healer_tick :: proc(e: ^Entity) {
 	e.pos.y += e.ya * 10
 
 	if e.pos.y >= Window_Height {
-		e.removed = true
+		remove_entity(e)
 	}
 
 	if SDL.HasIntersection(&e.pos, &player.pos) {
 		heal_player(20)
-		e.removed = true
+		remove_entity(e)
 	}
 }
 

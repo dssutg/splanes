@@ -27,7 +27,7 @@ new_explosion :: proc(x, y: i32) -> ^Entity {
 explosion_tick :: proc(e: ^Entity) {
 	e.tick_time += 1
 	if e.tick_time >= i32(len(explosion_frames)) {
-		e.removed = true
+		remove_entity(e)
 	}
 }
 

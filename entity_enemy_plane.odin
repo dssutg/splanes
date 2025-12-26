@@ -37,7 +37,7 @@ new_enemy_plane :: proc() -> ^Entity {
 enemy_plane_tick :: proc(e: ^Entity) {
 	if e.health <= 0 {
 		new_explosion(e.pos.x, e.pos.y)
-		e.removed = true
+		remove_entity(e)
 		return
 	}
 
@@ -60,7 +60,7 @@ enemy_plane_tick :: proc(e: ^Entity) {
 	e.pos.y += e.ya * 20
 
 	if e.pos.y >= Window_Height {
-		e.removed = true
+		remove_entity(e)
 	}
 
 	if SDL.HasIntersection(&e.pos, &player.pos) {

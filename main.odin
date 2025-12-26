@@ -32,57 +32,6 @@ restart :: proc() {
 	reset()
 }
 
-tick :: proc() {
-	if keys[.Pause] {
-		keys[.Pause] = false
-
-		#partial switch menu_ID {
-		case .None:
-			menu_ID = .Main
-		case .Main:
-			menu_ID = .None
-		}
-	}
-
-	if menu_ID != .None {
-		tick_menu()
-		return
-	}
-
-	if rand.int_max(20) == 0 {
-		new_enemy_plane()
-	}
-	if rand.int_max(80) == 0 {
-		new_ship()
-	}
-	if rand.int_max(30) == 0 {
-		new_island()
-	}
-	if rand.int_max(100) == 0 {
-		new_healer()
-	}
-
-	layer1 += 10
-	layer2 += 10
-	if layer2 >= Window_Height {
-		layer2 = layer1 - Window_Height
-		layer1, layer2 = layer2, layer1
-	}
-
-	for e := entities; e != nil; e = e.next {
-		entity_table[e.type].tick(e)
-	}
-
-	// delete all dead entities
-	nextEntity: ^Entity
-	for e := entities; e != nil; e = nextEntity {
-		nextEntity = e.next
-		if e.removed {
-			free_entity(e)
-		}
-	}
-}
-
 render_layer :: proc(offset_y: i32) {
 	tile_width :: (Window_Width + Tile_Size - 1) / Tile_Size
 	tile_height :: (Window_Height + Tile_Size - 1) / Tile_Size
@@ -98,50 +47,10 @@ render_layer :: proc(offset_y: i32) {
 	}
 }
 
-render :: proc() {
-	render_layer(layer1)
-	render_layer(layer2)
-
-	// Render entitites
-	for z_index in 0 ..= 2 {
-		for e := entities; e != nil; e = e.next {
-			entry := entity_table[e.type]
-			if entry.z_index == i32(z_index) {
-				entry.render(e)
-			}
-		}
-	}
-
-	// Render GUI
-	render_health_bar(player.health)
-
-	render_progress_bar(
-		{580, 20, 100, 25},
-		5,
-		player.bomb_tick_time * 100 / Player_Max_Bomb_Tick_Time,
-	)
-
-	render_small_logo()
-
-	render_string(
-		300,
-		20,
-		20,
-		{255, 202, 65, 255},
-		false,
-		0,
-		"SCORE: %v, DISTANCE: %v",
-		player.score,
-		player.distance,
-	)
-
-	render_menu()
-}
-
 do_game_loop :: proc() {
 	for running {
+		// Handle new events
 		event: SDL.Event
-
 		for SDL.PollEvent(&event) {
 			#partial switch event.type {
 			case .QUIT:
@@ -153,12 +62,91 @@ do_game_loop :: proc() {
 			}
 		}
 
-		tick()
+		// Handle pause and menus
+		if keys[.Pause] {
+			keys[.Pause] = false
+			#partial switch menu_ID {
+			case .None:
+				menu_ID = .Main
+			case .Main:
+				menu_ID = .None
+			}
+		}
+		pause := false
+		if menu_ID != .None {
+			tick_menu()
+			pause = true
+		}
 
+		// Clear screen
 		SDL.SetRenderDrawColor(renderer, 0, 0, 0, 0)
 		SDL.RenderClear(renderer)
 
-		render()
+		if !pause {
+			// Spawn new entities
+			if rand.int_max(20) == 0 {
+				new_enemy_plane()
+			}
+			if rand.int_max(80) == 0 {
+				new_ship()
+			}
+			if rand.int_max(30) == 0 {
+				new_island()
+			}
+			if rand.int_max(100) == 0 {
+				new_healer()
+			}
+
+			// Update water layers
+			layer1 += 10
+			layer2 += 10
+			if layer2 >= Window_Height {
+				layer2 = layer1 - Window_Height
+				layer1, layer2 = layer2, layer1
+			}
+		}
+
+		// Render water layers
+		render_layer(layer1)
+		render_layer(layer2)
+
+		// Update and render entitites
+		for z_index in 0 ..= 2 {
+			for &e in entity_pool {
+				entry := entity_table[e.type]
+				if entry.z_index == i32(z_index) {
+					if !pause {
+						entry.tick(&e)
+					}
+					entry.render(&e)
+				}
+			}
+		}
+
+		// Render GUI
+		render_health_bar(player.health)
+
+		render_progress_bar(
+			{580, 20, 100, 25},
+			5,
+			player.bomb_tick_time * 100 / Player_Max_Bomb_Tick_Time,
+		)
+
+		render_small_logo()
+
+		render_string(
+			300,
+			20,
+			20,
+			{255, 202, 65, 255},
+			false,
+			0,
+			"SCORE: %v, DISTANCE: %v",
+			player.score,
+			player.distance,
+		)
+
+		render_menu()
 
 		SDL.RenderPresent(renderer)
 		SDL.Delay(Window_Delay_Milliseconds)

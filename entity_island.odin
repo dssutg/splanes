@@ -27,7 +27,7 @@ island_tick :: proc(e: ^Entity) {
 	e.pos.x += e.xa * 10
 	e.pos.y += e.ya * 10
 	if e.pos.y >= Window_Height {
-		e.removed = true
+		remove_entity(e)
 	}
 }
 

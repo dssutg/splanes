@@ -36,7 +36,7 @@ ship_tick :: proc(e: ^Entity) {
 
 	if e.health <= 0 {
 		new_explosion(e.pos.x, e.pos.y)
-		e.removed = true
+		remove_entity(e)
 		return
 	}
 
@@ -44,7 +44,7 @@ ship_tick :: proc(e: ^Entity) {
 	e.pos.y += e.ya * 11
 
 	if e.pos.y >= Window_Height {
-		e.removed = true
+		remove_entity(e)
 	}
 }
 

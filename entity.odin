@@ -7,6 +7,7 @@ Max_Player_Health :: 100
 Player_Max_Bomb_Tick_Time :: 50
 
 Entity_Type :: enum u8 {
+	None = 0, // always zero
 	Player,
 	Enemy_Plane,
 	Bullet,
@@ -20,15 +21,12 @@ Entity_Type :: enum u8 {
 // Entity fat struct
 Entity :: struct {
 	// Common
-	next:           ^Entity,
-	prev:           ^Entity,
 	pos:            SDL.Rect,
 	crop:           SDL.Rect,
 	xa:             i32,
 	ya:             i32,
 	texture:        i32,
 	type:           Entity_Type,
-	removed:        bool,
 	health:         i32,
 	damage:         i32,
 	data:           i32,
@@ -53,48 +51,27 @@ Entity_Table_Entry :: struct {
 	z_index: i32,
 }
 
-// All entities in game
-entities: ^Entity
+entity_pool: [100]Entity // All entities in game
+entity_stub: Entity // Dummy entity returned when entity could not be created
 
 // Reference to the player in entity list
 player: ^Entity
 
 new_entity :: proc(type: Entity_Type) -> ^Entity {
-	e := new(Entity)
-
-	e.type = type
-	e.tick_time = 0
-	e.removed = false
-
-	// insert to the head of entity list
-	e.prev = nil
-	e.next = entities
-	if entities != nil {
-		entities.prev = e // not first element?
+	entity := &entity_stub // default to stub
+	for &e in entity_pool {
+		if e.type == .None {
+			entity = &e
+			break
+		}
 	}
-
-	entities = e
-
-	return e
+	entity^ = {} // zero entity
+	entity.type = type
+	return entity
 }
 
-free_entity :: proc(e: ^Entity) {
-	if e == nil || entities == nil {
-		return
-	}
-
-	if e == entities {
-		entities = e.next
-	}
-
-	if e.next != nil {
-		e.next.prev = e.prev
-	}
-	if e.prev != nil {
-		e.prev.next = e.next
-	}
-
-	free(e)
+remove_entity :: proc(e: ^Entity) {
+	e^ = {} // zero entity
 }
 
 hurt_entity :: proc(e: ^Entity, damage: i32) {
@@ -116,14 +93,14 @@ render_entity_sprite :: proc(e: ^Entity) {
 }
 
 remove_all_entities :: proc() {
-	next: ^Entity = nil
-	for e := entities; e != nil; e = next {
-		next = e.next
-		free_entity(e)
-	}
+	entity_pool = {}
 }
 
+// dummy entity handler that does nothing
+entity_none_cb :: proc(_: ^Entity) {}
+
 entity_table := [Entity_Type]Entity_Table_Entry {
+	.None = {tick = entity_none_cb, render = entity_none_cb, z_index = 0},
 	.Player = {tick = player_tick, render = player_render, z_index = 2},
 	.Enemy_Plane = {tick = enemy_plane_tick, render = enemy_plane_render, z_index = 2},
 	.Bullet = {tick = bullet_tick, render = bullet_render, z_index = 2},
