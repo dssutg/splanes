@@ -9,59 +9,58 @@ var bulletFrames = []sdl.Rect{
 	{X: 34, Y: 199, W: 32, H: 32},
 }
 
-func newBullet(etype EntityType, x, y, xa, ya int32, ownerType EntityType, damage, bulletFrameNo int32) *Entity {
-	e := newEntity(etype)
+func NewBullet(etype EntityType, x, y, dirX, dirY int32, ownerType EntityType, damage, bulletFrameNo int32) *Entity {
+	e := NewEntity(etype)
 
-	e.texture = 0
-	e.data = bulletFrameNo
+	e.InitialFrameNo = bulletFrameNo
 
-	e.pos.X = x
-	e.pos.Y = y
-	e.pos.W = bulletFrames[bulletFrameNo].W * 2
-	e.pos.H = bulletFrames[bulletFrameNo].H * 2
+	e.Pos.X = x
+	e.Pos.Y = y
+	e.Pos.W = bulletFrames[bulletFrameNo].W * 2
+	e.Pos.H = bulletFrames[bulletFrameNo].H * 2
 
-	e.xa = xa
-	e.ya = ya
+	e.VelX = dirX * 20
+	e.VelY = dirY * 20
 
-	e.ownerType = ownerType
-	e.damage = damage
+	e.OwnerKind = ownerType
+	e.Damage = damage
 
 	return e
 }
 
-func bulletTick(e *Entity) {
-	e.pos.X += e.xa * 20
-	e.pos.Y += e.ya * 20
+func BulletTick(e *Entity) {
+	e.Pos.X += e.VelX
+	e.Pos.Y += e.VelY
 
 	dead := false
 
-	if e.pos.HasIntersection(&WindowRect) {
-		for i := range entityPool {
-			other := &entityPool[i]
-			if other.etype == EntityTypeNone {
+	if e.Pos.HasIntersection(&WindowRect) {
+		for i := range EntityPool {
+			other := &EntityPool[i]
+			if other.Kind == EntityTypeNone {
 				continue
 			}
 
-			canCollide := (e.ownerType == EntityTypePlayer && other.etype == EntityTypeEnemyPlane) ||
-				(e.ownerType == EntityTypeEnemyPlane && other.etype == EntityTypePlayer)
+			canCollide := (e.OwnerKind == EntityTypePlayer && other.Kind == EntityTypeEnemyPlane) ||
+				(e.OwnerKind == EntityTypeEnemyPlane && other.Kind == EntityTypePlayer)
 
 			if !canCollide {
 				continue
 			}
 
-			if !other.pos.HasIntersection(&e.pos) {
+			if !other.Pos.HasIntersection(&e.Pos) {
 				continue
 			}
 
 			dead = true
-			hurtEntity(other, e.damage)
-			if other.etype == EntityTypePlayer {
-				newExplosion(e.pos.X, e.pos.Y)
+			other.Hurt(e.Damage)
+			if other.Kind == EntityTypePlayer {
+				NewExplosion(e.Pos.X, e.Pos.Y)
 				continue
 			}
 
-			if e.ownerType == EntityTypePlayer {
-				player.score++
+			if e.OwnerKind == EntityTypePlayer {
+				player.Score++
 			}
 		}
 	} else {
@@ -69,10 +68,10 @@ func bulletTick(e *Entity) {
 	}
 
 	if dead {
-		removeEntity(e)
+		e.Remove()
 	}
 }
 
-func bulletRender(e *Entity) {
-	renderSprite(e.texture, e.pos, bulletFrames[e.data])
+func BulletRender(e *Entity) {
+	RenderSprite(e.Texture, e.Pos, bulletFrames[e.InitialFrameNo])
 }

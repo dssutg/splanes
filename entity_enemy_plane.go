@@ -14,62 +14,61 @@ var enemyPlaneFrames = []sdl.Rect{
 	{X: 1, Y: 133, W: 32, H: 32},
 }
 
-func newEnemyPlane() *Entity {
-	e := newEntity(EntityTypeEnemyPlane)
+func NewEnemyPlane() *Entity {
+	e := NewEntity(EntityTypeEnemyPlane)
 
-	e.texture = 0
+	e.Crop = enemyPlaneFrames[rand.IntN(len(enemyPlaneFrames))]
 
-	e.crop = enemyPlaneFrames[rand.IntN(len(enemyPlaneFrames))]
+	e.Pos.W = e.Crop.W * 2
+	e.Pos.H = e.Crop.H * 2
+	e.Pos.X = rand.Int32N(WindowW)
+	e.Pos.Y = -rand.Int32N(WindowH) - e.Pos.H
 
-	e.pos.W = e.crop.W * 2
-	e.pos.H = e.crop.H * 2
-	e.pos.X = rand.Int32N(WindowWidth)
-	e.pos.Y = -rand.Int32N(WindowHeight) - e.pos.H
+	e.VelY = 20
 
-	e.xa = 0
-	e.ya = 1
-
-	e.hasShot = false
-	e.hasBombed = false
-	e.health = 100
+	e.Health = 100
 
 	return e
 }
 
-func enemyPlaneTick(e *Entity) {
-	if e.health <= 0 {
-		newExplosion(e.pos.X, e.pos.Y)
-		removeEntity(e)
+func EnemyPlaneTick(e *Entity) {
+	// If dead, explode and remove it.
+	if e.Health <= 0 {
+		NewExplosion(e.Pos.X, e.Pos.Y)
+		e.Remove()
 		return
 	}
 
-	if !e.hasShot {
-		e.hasShot = true
-		x := e.pos.X + (e.pos.W-128)/2
-		y := e.pos.Y + e.pos.W
-		newBullet(EntityTypeBullet, x, y, 0, 2, e.etype, 2, 1)
-	} else {
-		if e.hasShot {
-			e.tickTime++
-			if e.tickTime > 20 {
-				e.hasShot = false
-				e.tickTime = 0
-			}
+	if e.HasShot {
+		// Handle reload delay.
+		e.Ticks++
+		if e.Ticks > 20 {
+			e.HasShot = false
+			e.Ticks = 0
 		}
+	} else {
+		// Shoot.
+		e.HasShot = true
+		x := e.Pos.X + (e.Pos.W-128)/2
+		y := e.Pos.Y + e.Pos.W
+		NewBullet(EntityTypeBullet, x, y, 0, 2, e.Kind, 2, 1)
 	}
 
-	e.pos.X += e.xa * 20
-	e.pos.Y += e.ya * 20
+	// Move.
+	e.Pos.X += e.VelX
+	e.Pos.Y += e.VelY
 
-	if e.pos.Y >= WindowHeight {
-		removeEntity(e)
+	// If outside screen, remove.
+	if e.Pos.Y >= WindowH {
+		e.Remove()
 	}
 
-	if e.pos.HasIntersection(&player.pos) {
-		player.health = 0
+	// If collides with player, kill player.
+	if e.Pos.HasIntersection(&player.Pos) {
+		player.Health = 0
 	}
 }
 
-func enemyPlaneRender(e *Entity) {
-	renderEntitySprite(e)
+func EnemyPlaneRender(e *Entity) {
+	e.RenderSprite()
 }

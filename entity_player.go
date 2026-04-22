@@ -6,127 +6,143 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-func newPlayer() *Entity {
-	e := newEntity(EntityTypePlayer)
+func NewPlayer() *Entity {
+	e := NewEntity(EntityTypePlayer)
 
-	e.texture = 0
+	e.Crop = sdl.Rect{X: 299, Y: 101, W: 61, H: 49}
 
-	e.xa = 0
-	e.ya = 0
+	e.Pos.W = e.Crop.W * 2
+	e.Pos.H = e.Crop.H * 2
+	e.Pos.X = (WindowW - e.Pos.W) / 2
+	e.Pos.Y = WindowH - e.Pos.H - 40
 
-	e.crop = sdl.Rect{X: 299, Y: 101, W: 61, H: 49}
+	e.Health = MaxPlayerHealth
 
-	e.pos.W = e.crop.W * 2
-	e.pos.H = e.crop.H * 2
-	e.pos.X = (WindowWidth - e.pos.W) / 2
-	e.pos.Y = WindowHeight - e.pos.H - 40
-
-	e.hasShot = false
-	e.hasBombed = false
-
-	e.health = MaxPlayerHealth
-
-	e.score = 0
-	e.distance = 0
-	e.deathTime = 0
-	e.bombTickTime = PlayerMaxBombTickTime
+	e.BombTicks = PlayerMaxBombTickTime
 
 	return e
 }
 
-func playerDoDie(e *Entity) {
-	e.deathTime++
+func PlayerDoDie(e *Entity) {
+	e.DeathTime++
 
-	if e.deathTime == 1 {
+	if e.DeathTime == 1 {
 		const explosionCount = 10
 		for range explosionCount {
-			x := e.pos.X + rand.Int32N(e.pos.W)
-			y := e.pos.Y + rand.Int32N(e.pos.H/2)
-			newExplosion(x, y)
+			x := e.Pos.X + rand.Int32N(e.Pos.W)
+			y := e.Pos.Y + rand.Int32N(e.Pos.H/2)
+			NewExplosion(x, y)
 		}
 		return
 	}
 
-	if e.deathTime > 10 {
+	if e.DeathTime > 10 {
 		menuID = MenuTypeLose
 	}
 }
 
-func healPlayer(healPoints int32) {
-	player.health += healPoints
-	if player.health > MaxPlayerHealth {
-		player.health = MaxPlayerHealth
+func PlayerHeal(e *Entity, healPoints int32) {
+	e.Health += healPoints
+	if e.Health > MaxPlayerHealth {
+		e.Health = MaxPlayerHealth
 	}
 }
 
-func playerTick(e *Entity) {
-	if e.health <= 0 {
-		playerDoDie(e)
+func PlayerTick(e *Entity) {
+	if e.Health <= 0 {
+		PlayerDoDie(e)
 		return
 	}
 
-	e.xa = 0
+	const (
+		minVel         = -20
+		maxVel         = 20
+		accelFactor    = 4
+		slowdownFactor = 1
+	)
 
-	if keys[KeyLeft] {
-		e.xa = -20
+	// Determine current acceleration based on input.
+	// If the player holds the two keys at the same
+	// time, acceleration becomes zero because the
+	// forces negate themselves.
+	e.AccelX = 0
+	if Keys[KeyLeft] {
+		e.AccelX -= accelFactor
+	}
+	if Keys[KeyRight] {
+		e.AccelX += accelFactor
 	}
 
-	if keys[KeyRight] {
-		e.xa = 20
+	// Gradually update the velocity.
+	{
+		accelX := e.AccelX
+
+		if accelX == 0 {
+			// Gradually slow down the velocity by the inverse of the acceleration.
+			// But make sure that we don't get pass the zero velocity,
+			// otherwise the player won't stop.
+			if e.VelX > 0 {
+				accelX = -min(e.VelX, slowdownFactor)
+			} else {
+				accelX = min(-e.VelX, slowdownFactor)
+			}
+		}
+
+		e.VelX = Clamp(e.VelX+accelX, minVel, maxVel)
 	}
 
-	if keys[KeyBomb] && !e.hasBombed {
-		e.hasBombed = true
-		e.bombTickTime = 0
+	if Keys[KeyBomb] && !e.HasBombed {
+		e.HasBombed = true
+		e.BombTicks = 0
 
-		bomb := newBomb()
-		bomb.pos.X = e.pos.X + (e.pos.W-bomb.pos.W)/2 - 10
-		bomb.pos.Y = e.pos.Y - bomb.pos.H
+		bomb := NewBomb()
+		bomb.Pos.X = e.Pos.X + (e.Pos.W-bomb.Pos.W)/2 - 10
+		bomb.Pos.Y = e.Pos.Y - bomb.Pos.H
 	} else {
-		if e.hasBombed {
-			e.bombTickTime++
-			if e.bombTickTime >= PlayerMaxBombTickTime {
-				e.hasBombed = false
-				e.bombTickTime = PlayerMaxBombTickTime
+		if e.HasBombed {
+			e.BombTicks++
+			if e.BombTicks >= PlayerMaxBombTickTime {
+				e.HasBombed = false
+				e.BombTicks = PlayerMaxBombTickTime
 			}
 		}
 	}
 
-	if keys[KeyShoot] && !e.hasShot {
-		e.hasShot = true
+	if Keys[KeyShoot] && !e.HasShot {
+		e.HasShot = true
 
 		const damage = 50
 
-		bullet := newBullet(EntityTypeBullet, 0, 0, 0, -1, e.etype, damage, 0)
-		bullet.pos.X = e.pos.X + (e.pos.W-bullet.pos.W)/2 - 10
-		bullet.pos.Y = e.pos.Y - bullet.pos.H
-	} else if e.hasShot {
-		e.tickTime++
-		if e.tickTime > 3 {
-			e.hasShot = false
-			e.tickTime = 0
+		bullet := NewBullet(EntityTypeBullet, 0, 0, 0, -1, e.Kind, damage, 0)
+		bullet.Pos.X = e.Pos.X + (e.Pos.W-bullet.Pos.W)/2 - 10
+		bullet.Pos.Y = e.Pos.Y - bullet.Pos.H
+	} else if e.HasShot {
+		e.Ticks++
+		if e.Ticks > 3 {
+			e.HasShot = false
+			e.Ticks = 0
 		}
 	}
 
-	xn := e.pos.X + e.xa
-	yn := e.pos.Y + e.ya
+	xn := e.Pos.X + e.VelX
+	yn := e.Pos.Y + e.VelY
 
-	if xn+e.pos.W >= WindowWidth+1 {
-		xn = WindowWidth - e.pos.W
+	if xn+e.Pos.W >= WindowW+1 {
+		xn = WindowW - e.Pos.W
 	}
 
 	if xn < 0 {
 		xn = 0
 	}
 
-	e.pos.X = xn
-	e.pos.Y = yn
+	e.Pos.X = xn
+	e.Pos.Y = yn
 
-	e.distance++
+	e.Distance++
 }
 
-func playerRender(e *Entity) {
-	if e.deathTime < 5 {
-		renderEntitySprite(e)
+func PlayerRender(e *Entity) {
+	if e.DeathTime < 5 {
+		e.RenderSprite()
 	}
 }

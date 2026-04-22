@@ -20,9 +20,9 @@ const (
 	KeyBomb
 )
 
-var keys = make(map[Key]bool)
+var Keys = make(map[Key]bool)
 
-var keyMap = map[sdl.Keycode]Key{
+var KeyMap = map[sdl.Keycode]Key{
 	sdl.K_ESCAPE: KeyPause,
 	sdl.K_UP:     KeyUp,
 	sdl.K_DOWN:   KeyDown,
@@ -43,14 +43,14 @@ var keyMap = map[sdl.Keycode]Key{
 	sdl.K_x:      KeyBomb,
 }
 
-func updateKey(keyCode sdl.Keycode, down bool) {
-	if key, ok := keyMap[keyCode]; ok {
-		keys[key] = down
+func UpdateKey(keyCode sdl.Keycode, down bool) {
+	if key, ok := KeyMap[keyCode]; ok {
+		Keys[key] = down
 	}
 }
 
-func singleKeyPress(key Key) bool {
-	pressed := keys[key]
-	keys[key] = false
+func SingleKeyPress(key Key) bool {
+	pressed := Keys[key]
+	Keys[key] = false
 	return pressed
 }

@@ -13,27 +13,25 @@ var explosionFrames = []sdl.Rect{
 	{X: 232, Y: 166, W: 32, H: 32},
 }
 
-func newExplosion(x, y int32) *Entity {
-	e := newEntity(EntityTypeExplosion)
-
-	e.texture = 0
+func NewExplosion(x, y int32) *Entity {
+	e := NewEntity(EntityTypeExplosion)
 
 	frame := explosionFrames[0]
-	e.pos = sdl.Rect{X: x, Y: y, W: frame.W * 2, H: frame.H * 2}
+	e.Pos = sdl.Rect{X: x, Y: y, W: frame.W * 2, H: frame.H * 2}
 
-	playSound(soundExplosion1, 100)
+	PlaySound(soundExplosion1, 100)
 
 	return e
 }
 
-func explosionTick(e *Entity) {
-	e.tickTime++
-	if e.tickTime >= int32(len(explosionFrames)) {
-		removeEntity(e)
+func ExplosionTick(e *Entity) {
+	e.Ticks++
+	if e.Ticks >= int32(len(explosionFrames)) {
+		e.Remove()
 	}
 }
 
-func explosionRender(e *Entity) {
-	frameNo := e.tickTime % int32(len(explosionFrames))
-	renderSprite(e.texture, e.pos, explosionFrames[frameNo])
+func ExplosionRender(e *Entity) {
+	frameNo := e.Ticks % int32(len(explosionFrames))
+	RenderSprite(e.Texture, e.Pos, explosionFrames[frameNo])
 }

@@ -1,7 +1,5 @@
 package main
 
-import "github.com/veandco/go-sdl2/sdl"
-
 var exitMenu Menu
 
 var exitButtons = []string{"YES", "NO"}
@@ -9,13 +7,11 @@ var exitButtons = []string{"YES", "NO"}
 func menuExitTick() {
 	handleUpDownSelection(&exitMenu, len(exitButtons))
 
-	if singleKeyPress(KeyEnter) {
+	if SingleKeyPress(KeyEnter) {
 		switch exitMenu.SelectedIndex {
-		case 0:
-			// Yes
+		case 0: // Yes
 			running = false
-		case 1:
-			// No
+		case 1: // No
 			menuID = prevMenuID
 		}
 	}
@@ -24,32 +20,34 @@ func menuExitTick() {
 func menuExitRender() {
 	title := "Are you sure you want to exit?"
 
-	renderString(0, 0, 40, sdl.Color{R: 255, G: 255, B: 0, A: 255}, true, -2-len(exitButtons)+1, title)
+	RenderString(
+		RenderStringOptions{
+			Size:                   menuFontSize,
+			Color:                  menuNormalTextColor,
+			RelativeToWindowCenter: true,
+			LineNo:                 -2 - len(exitButtons) + 1,
+		},
+		title,
+	)
 
 	for i, button := range exitButtons {
+		color := menuNormalTextColor
+		format := "%s"
+
 		if exitMenu.SelectedIndex == i {
-			renderString(
-				0,
-				0,
-				40,
-				sdl.Color{R: 160, G: 160, B: 0, A: 255},
-				true,
-				i-len(exitButtons)+1,
-				"> %s <",
-				button,
-			)
-		} else {
-			renderString(
-				0,
-				0,
-				40,
-				sdl.Color{R: 255, G: 255, B: 0, A: 255},
-				true,
-				i-len(exitButtons)+1,
-				"%s",
-				button,
-			)
+			color = menuHoverTextColor
+			format = "> %s <"
 		}
+
+		RenderString(
+			RenderStringOptions{
+				Size:                   menuFontSize,
+				Color:                  color,
+				RelativeToWindowCenter: true,
+				LineNo:                 i - len(exitButtons) + 1,
+			},
+			format,
+			button,
+		)
 	}
 }
-

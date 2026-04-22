@@ -28,95 +28,111 @@ const (
 // Entity fat struct
 type Entity struct {
 	// Common
-	pos      sdl.Rect
-	crop     sdl.Rect
-	xa       int32
-	ya       int32
-	texture  int
-	etype    EntityType
-	health   int32
-	damage   int32
-	data     int32
-	tickTime int32
+	Pos            sdl.Rect   // entity position and size
+	Crop           sdl.Rect   // current entity sprite
+	VelX           int32      // entity horizontal velocity
+	VelY           int32      // entity vertical velocity
+	Texture        TextureID  // current entity texture ID
+	Kind           EntityType // entity kind
+	Health         int32      // entity health
+	Damage         int32      // entity damage (same unit as health)
+	InitialFrameNo int32      // initial frame number
+	Ticks          int32      // generic timer in ticks
 
-	// EntityBullet
-	ownerType EntityType // entity type that spawned this bullet
+	// For EntityTypeBullet
+	OwnerKind EntityType // entity type that spawned this bullet
 
-	// EntityPlayer
-	score        uint64
-	distance     uint64
-	hasShot      bool
-	hasBombed    bool
-	deathTime    int32
-	bombTickTime int32
+	// For EntityTypePlayer
+	Score     uint64 // player's score
+	Distance  uint64 // the distance the player has flown
+	DeathTime int32  // death animation time until removal
+	BombTicks int32  // bomb delay timer
+	AccelX    int32  // player horizontal acceleration
+
+	// For EntityTypePlayer, EntityTypeEnemyPlane, EntityTypeShip
+	HasShot   bool // has the entity recently shot
+	HasBombed bool // has the entity recently bombed
+
+	// For EntityTypeBomb
+	TicksDelta int32 // ticks delta until fallen onto the target
 }
 
-// Entity polymorphic dispatch table entry
+// Entity dispatch table entry
 type EntityTableEntry struct {
-	Tick   func(e *Entity)
-	Render func(e *Entity)
-	ZIndex int32
+	Tick   func(e *Entity) // update entity logic per frame
+	Render func(e *Entity) // render entity
+	ZIndex int32           // entity's z-index (render order, higher - rendered above others)
 }
 
 var (
-	entityPool [100]Entity // All entities in game
-	entityStub Entity      // Dummy entity returned when entity could not be created
+	EntityPool [100]Entity // all entities in game
+	entityStub Entity      // dummy entity returned when entity could not be created
 )
 
-// Reference to the player in entity list
-var player *Entity
+var player *Entity // player reference in entity list
 
-func newEntity(etype EntityType) *Entity {
+func NewEntity(etype EntityType) *Entity {
 	entity := &entityStub // default to stub
-	for i := range entityPool {
-		if entityPool[i].etype == EntityTypeNone {
-			entity = &entityPool[i]
+
+	// Find the free position in entity pool,
+	// otherwise keep using stub.
+	for i := range EntityPool {
+		if EntityPool[i].Kind == EntityTypeNone {
+			entity = &EntityPool[i]
 			break
 		}
 	}
+
+	// Initialize the found entity.
+	// Needs specialized constructors after that.
 	*entity = Entity{} // zero entity
-	entity.etype = etype
+	entity.Kind = etype
+
 	return entity
 }
 
-func removeEntity(e *Entity) {
+func (e *Entity) Remove() {
 	*e = Entity{} // zero entity
 }
 
-func hurtEntity(e *Entity, damage int32) {
-	if e.etype != EntityTypePlayer && e.etype != EntityTypeEnemyPlane && e.etype != EntityTypeShip {
+func (e *Entity) Hurt(damage int32) {
+	switch e.Kind {
+	case EntityTypePlayer:
+	case EntityTypeEnemyPlane:
+	case EntityTypeShip:
+		break
+	default:
 		return
 	}
 
-	if e.health < damage {
-		e.health = 0
+	if e.Health < damage {
+		e.Health = 0
 	} else {
-		e.health -= damage
+		e.Health -= damage
 	}
 
-	playSound(soundHurt, 100)
+	PlaySound(soundHurt, 100)
 }
 
-func renderEntitySprite(e *Entity) {
-	renderSprite(e.texture, e.pos, e.crop)
+func (e *Entity) RenderSprite() {
+	RenderSprite(e.Texture, e.Pos, e.Crop)
 }
 
-func removeAllEntities() {
-	clear(entityPool[:])
+func RemoveAllEntities() {
+	clear(EntityPool[:])
 }
 
-func entityNoneCallback(_ *Entity) {
-	// dummy entity handler that does nothing
-}
+// EntityNoneCallback is a function that does nothing.
+func EntityNoneCallback(*Entity) {}
 
 var entityTable = map[EntityType]EntityTableEntry{
-	EntityTypeNone:       {Tick: entityNoneCallback, Render: entityNoneCallback, ZIndex: 0},
-	EntityTypePlayer:     {Tick: playerTick, Render: playerRender, ZIndex: 2},
-	EntityTypeEnemyPlane: {Tick: enemyPlaneTick, Render: enemyPlaneRender, ZIndex: 2},
-	EntityTypeBullet:     {Tick: bulletTick, Render: bulletRender, ZIndex: 2},
-	EntityTypeBomb:       {Tick: bombTick, Render: bombRender, ZIndex: 2},
-	EntityTypeIsland:     {Tick: islandTick, Render: islandRender, ZIndex: 0},
-	EntityTypeExplosion:  {Tick: explosionTick, Render: explosionRender, ZIndex: 2},
-	EntityTypeShip:       {Tick: shipTick, Render: shipRender, ZIndex: 1},
-	EntityTypeHealer:     {Tick: healerTick, Render: healerRender, ZIndex: 2},
+	EntityTypeNone:       {Tick: EntityNoneCallback, Render: EntityNoneCallback, ZIndex: 0},
+	EntityTypePlayer:     {Tick: PlayerTick, Render: PlayerRender, ZIndex: 2},
+	EntityTypeEnemyPlane: {Tick: EnemyPlaneTick, Render: EnemyPlaneRender, ZIndex: 2},
+	EntityTypeBullet:     {Tick: BulletTick, Render: BulletRender, ZIndex: 2},
+	EntityTypeBomb:       {Tick: BombTick, Render: BombRender, ZIndex: 2},
+	EntityTypeIsland:     {Tick: IslandTick, Render: IslandRender, ZIndex: 0},
+	EntityTypeExplosion:  {Tick: ExplosionTick, Render: ExplosionRender, ZIndex: 2},
+	EntityTypeShip:       {Tick: ShipTick, Render: ShipRender, ZIndex: 1},
+	EntityTypeHealer:     {Tick: HealerTick, Render: HealerRender, ZIndex: 2},
 }

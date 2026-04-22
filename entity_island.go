@@ -12,31 +12,29 @@ var islandFrames = []sdl.Rect{
 	{X: 230, Y: 496, W: 64, H: 65},
 }
 
-func newIsland() *Entity {
-	e := newEntity(EntityTypeIsland)
+func NewIsland() *Entity {
+	e := NewEntity(EntityTypeIsland)
 
-	e.texture = 0
-	e.data = rand.Int32N(3)
+	e.InitialFrameNo = rand.Int32N(int32(len(islandFrames)))
 
-	e.pos.W = islandFrames[e.data].W * 3
-	e.pos.H = islandFrames[e.data].H * 3
-	e.pos.X = rand.Int32N(WindowWidth)
-	e.pos.Y = -rand.Int32N(WindowHeight) - e.pos.H
+	e.Pos.W = islandFrames[e.InitialFrameNo].W * 3
+	e.Pos.H = islandFrames[e.InitialFrameNo].H * 3
+	e.Pos.X = rand.Int32N(WindowW)
+	e.Pos.Y = -rand.Int32N(WindowH) - e.Pos.H
 
-	e.xa = 0
-	e.ya = 1
+	e.VelY = 1
 
 	return e
 }
 
-func islandTick(e *Entity) {
-	e.pos.X += e.xa * 10
-	e.pos.Y += e.ya * 10
-	if e.pos.Y >= WindowHeight {
-		removeEntity(e)
+func IslandTick(e *Entity) {
+	e.Pos.X += e.VelX * 10
+	e.Pos.Y += e.VelY * 10
+	if e.Pos.Y >= WindowH {
+		e.Remove()
 	}
 }
 
-func islandRender(e *Entity) {
-	renderSprite(e.texture, e.pos, islandFrames[e.data])
+func IslandRender(e *Entity) {
+	RenderSprite(e.Texture, e.Pos, islandFrames[e.InitialFrameNo])
 }
