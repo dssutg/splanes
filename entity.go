@@ -23,6 +23,7 @@ const (
 	EntityTypeExplosion
 	EntityTypeShip
 	EntityTypeHealer
+	EntityTypeSubmarine
 )
 
 // Entity fat struct
@@ -39,6 +40,7 @@ type Entity struct {
 	Damage         int32      // entity damage (same unit as health)
 	InitialFrameNo int32      // initial frame number
 	Ticks          int32      // generic timer in ticks
+	State          uint8      // entity state
 
 	// For EntityTypeBullet
 	OwnerKind EntityType // entity type that spawned this bullet
@@ -49,10 +51,10 @@ type Entity struct {
 	DeathTime int32  // death animation time until removal
 	BombTicks int32  // bomb delay timer
 	AccelX    int32  // player horizontal acceleration
+	HasBombed bool   // has the entity recently bombed
 
-	// For EntityTypePlayer, EntityTypeEnemyPlane, EntityTypeShip
-	HasShot   bool // has the entity recently shot
-	HasBombed bool // has the entity recently bombed
+	// For EntityTypePlayer, EntityTypeEnemyPlane
+	HasShot bool // has the entity recently shot
 
 	// For EntityTypeBomb
 	TicksDelta int32 // ticks delta until fallen onto the target
@@ -101,6 +103,7 @@ func (e *Entity) Hurt(damage int32) {
 	case EntityTypePlayer:
 	case EntityTypeEnemyPlane:
 	case EntityTypeShip:
+	case EntityTypeSubmarine:
 		break
 	default:
 		return
@@ -153,4 +156,5 @@ var entityTable = map[EntityType]EntityTableEntry{
 	EntityTypeExplosion:  {Tick: ExplosionTick, Render: ExplosionRender, ZIndex: 2},
 	EntityTypeShip:       {Tick: ShipTick, Render: ShipRender, ZIndex: 1},
 	EntityTypeHealer:     {Tick: HealerTick, Render: HealerRender, ZIndex: 2},
+	EntityTypeSubmarine:  {Tick: SubmarineTick, Render: SubmarineRender, ZIndex: 1},
 }

@@ -169,7 +169,11 @@ func tickGame() {
 		NewEnemyPlane()
 	}
 	if rand.IntN(80) == 0 {
-		NewShip()
+		if rand.IntN(10) <= 3 {
+			NewSubmarine()
+		} else {
+			NewShip()
+		}
 	}
 	if rand.IntN(30) == 0 {
 		NewIsland()

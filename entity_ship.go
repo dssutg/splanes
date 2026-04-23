@@ -23,8 +23,6 @@ func NewShip() *Entity {
 
 	e.VelY = 11
 
-	e.HasShot = false
-	e.HasBombed = false
 	e.Health = 100
 
 	return e

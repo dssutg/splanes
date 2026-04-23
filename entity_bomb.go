@@ -54,10 +54,20 @@ func BombTick(e *Entity) {
 
 	for i := range EntityPool {
 		it := &EntityPool[i]
-		if it.Kind == EntityTypeShip && it.Pos.HasIntersection(&scaledRect) {
+
+		canAttack := it.Kind == EntityTypeShip || it.Kind == EntityTypeSubmarine
+
+		if canAttack && it.Pos.HasIntersection(&scaledRect) {
 			it.Hurt(e.Damage)
+
 			NewExplosion(scaledRect.X, scaledRect.Y)
-			player.Score++
+
+			switch it.Kind {
+			case EntityTypeShip:
+				player.Score += 50
+			case EntityTypeSubmarine:
+				player.Score += 200
+			}
 			break
 		}
 	}

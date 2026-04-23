@@ -1,6 +1,9 @@
 package main
 
-import "math"
+import (
+	"math"
+	"math/rand/v2"
+)
 
 type Float interface {
 	~float32 | ~float64
@@ -60,4 +63,18 @@ func RotateAroundSinCos[T Float](x, y T, originX, originY T, sin, cos T) (rx, ry
 	ry += originY
 
 	return
+}
+
+func RandIntRange(minValue, maxValue int) int {
+	if minValue > maxValue {
+		minValue, maxValue = maxValue, minValue
+	}
+	return minValue + rand.IntN(maxValue-minValue+1)
+}
+
+func RandInt32Range(minValue, maxValue int32) int32 {
+	if minValue > maxValue {
+		minValue, maxValue = maxValue, minValue
+	}
+	return minValue + rand.Int32N(maxValue-minValue+1)
 }
