@@ -7,6 +7,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// NewPlayer creates a new player entity and initializes its properties.
+// The player starts at the bottom-center of the screen with full health.
 func NewPlayer() *Entity {
 	e := NewEntity(EntityTypePlayer)
 
@@ -24,6 +26,8 @@ func NewPlayer() *Entity {
 	return e
 }
 
+// PlayerDoDie handles the player death sequence.
+// It spawns explosions and transitions to the game over menu after a delay.
 func PlayerDoDie(e *Entity) {
 	e.DeathTime++
 
@@ -42,6 +46,7 @@ func PlayerDoDie(e *Entity) {
 	}
 }
 
+// PlayerHeal increases the player's health, clamping to the maximum.
 func PlayerHeal(e *Entity, healPoints int32) {
 	e.Health += healPoints
 	if e.Health > MaxPlayerHealth {
@@ -49,13 +54,15 @@ func PlayerHeal(e *Entity, healPoints int32) {
 	}
 }
 
+// PlayerTick updates the player entity each game tick.
+// It handles input, movement, shooting, bombing, and rotation.
 func PlayerTick(e *Entity) {
 	if e.Health <= 0 {
 		PlayerDoDie(e)
 		return
 	}
 
-	// Adjust player's rotation by input.
+	// Handle rotation input.
 	const rotationDelta = 10
 	if Keys[KeyRotateLeft] {
 		e.Rotation -= rotationDelta
@@ -66,6 +73,7 @@ func PlayerTick(e *Entity) {
 	// Restrict rotation freedom.
 	e.Rotation = Clamp(e.Rotation, -30, 30)
 
+	// Movement constants.
 	const (
 		minVel         = -20
 		maxVel         = 20
@@ -85,10 +93,11 @@ func PlayerTick(e *Entity) {
 		e.AccelX += accelFactor
 	}
 
-	// Gradually update the velocity.
+	// Apply acceleration and friction.
 	{
 		accelX := e.AccelX
 
+		// Apply friction if no input.
 		if accelX == 0 {
 			// Gradually slow down the velocity by the inverse of the acceleration.
 			// But make sure that we don't get pass the zero velocity,
@@ -103,6 +112,7 @@ func PlayerTick(e *Entity) {
 		e.VelX = Clamp(e.VelX+accelX, minVel, maxVel)
 	}
 
+	// Handle bomb dropping.
 	if Keys[KeyBomb] && !e.HasBombed {
 		e.HasBombed = true
 		e.BombTicks = 0
@@ -110,16 +120,15 @@ func PlayerTick(e *Entity) {
 		bomb := NewBomb()
 		bomb.Pos.X = e.Pos.X + (e.Pos.W-bomb.Pos.W)/2 - 10
 		bomb.Pos.Y = e.Pos.Y - bomb.Pos.H
-	} else {
-		if e.HasBombed {
-			e.BombTicks++
-			if e.BombTicks >= PlayerMaxBombTickTime {
-				e.HasBombed = false
-				e.BombTicks = PlayerMaxBombTickTime
-			}
+	} else if e.HasBombed {
+		e.BombTicks++
+		if e.BombTicks >= PlayerMaxBombTickTime {
+			e.HasBombed = false
+			e.BombTicks = PlayerMaxBombTickTime
 		}
 	}
 
+	// Handle shooting.
 	if Keys[KeyShoot] && !e.HasShot {
 		// Apply cool down.
 		e.HasShot = true
@@ -152,11 +161,11 @@ func PlayerTick(e *Entity) {
 		}
 	}
 
-	// Move the player.
+	// Apply velocity.
 	xn := e.Pos.X + e.VelX
 	yn := e.Pos.Y + e.VelY
 
-	// Make sure the player stays within the screen.
+	// Keep player within screen bounds.
 	if xn+e.Pos.W >= WindowW+1 {
 		xn = WindowW - e.Pos.W
 	}
@@ -170,6 +179,8 @@ func PlayerTick(e *Entity) {
 	e.Distance++
 }
 
+// PlayerRender draws the player entity.
+// The player is only rendered during the death animation briefly.
 func PlayerRender(e *Entity) {
 	if e.DeathTime < 5 {
 		e.RenderSprite()

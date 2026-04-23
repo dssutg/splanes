@@ -1,9 +1,12 @@
 package main
 
+// exitMenu is the exit confirmation menu navigation state.
 var exitMenu Menu
 
+// exitButtons are the confirmation options.
 var exitButtons = []string{"YES", "NO"}
 
+// menuExitTick handles input for the exit confirmation menu.
 func menuExitTick() {
 	handleUpDownSelection(&exitMenu, len(exitButtons))
 
@@ -17,17 +20,16 @@ func menuExitTick() {
 	}
 }
 
+// menuExitRender draws the exit confirmation prompt.
 func menuExitRender() {
-	title := "Are you sure you want to exit?"
-
-	RenderString(
+	RenderStringf(
 		RenderStringOptions{
 			Size:                   menuFontSize,
 			Color:                  menuNormalTextColor,
 			RelativeToWindowCenter: true,
 			LineNo:                 -2 - len(exitButtons) + 1,
 		},
-		title,
+		"Are you sure you want to exit?",
 	)
 
 	for i, button := range exitButtons {
@@ -39,7 +41,7 @@ func menuExitRender() {
 			format = "> %s <"
 		}
 
-		RenderString(
+		RenderStringf(
 			RenderStringOptions{
 				Size:                   menuFontSize,
 				Color:                  color,

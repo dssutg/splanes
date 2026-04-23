@@ -6,18 +6,21 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// Submarine state constants.
 const (
-	SubmarineStateRising = iota
-	SubmarineStateIdle
-	SubmarineStateDiving
+	SubmarineStateSurfacing = iota // Surfacing (animated up)
+	SubmarineStateIdle             // On the surface
+	SubmarineStateDiving           // Diving (animated down)
 )
 
+// Submarine timing constants.
 const (
-	maxSubmarineRisingTicks    = 60 * 3
-	maxSubmarineIdleTicks      = maxSubmarineRisingTicks + 40
-	submarineTicksBeforeDiving = maxSubmarineRisingTicks / 3
+	maxSubmarineSurfacingTicks = 60 * 3
+	maxSubmarineIdleTicks      = maxSubmarineSurfacingTicks + 40
+	submarineTicksBeforeDiving = maxSubmarineSurfacingTicks / 3
 )
 
+// submarineFrames are the animation frames for submarines.
 var submarineFrames = []sdl.Rect{
 	{X: 529, Y: 100, W: 32, H: 98},
 	{X: 496, Y: 100, W: 32, H: 98},
@@ -27,6 +30,8 @@ var submarineFrames = []sdl.Rect{
 	{X: 364, Y: 100, W: 32, H: 98},
 }
 
+// NewSubmarine creates a submarine with random initial state.
+// Submarines can rise, idle on the surface, or dive.
 func NewSubmarine() *Entity {
 	e := NewEntity(EntityTypeSubmarine)
 
@@ -41,17 +46,15 @@ func NewSubmarine() *Entity {
 
 	e.Health = 100
 
+	// Random initial state.
 	switch rand.IntN(4) {
 	case 0:
-		// Rising: 1/4 probability.
-		e.State = SubmarineStateRising
-		e.Ticks = rand.Int32N(maxSubmarineRisingTicks)
+		e.State = SubmarineStateSurfacing
+		e.Ticks = rand.Int32N(maxSubmarineSurfacingTicks)
 	case 1:
-		// Idle: 1/4 probability.
 		e.State = SubmarineStateIdle
-		e.Ticks = RandInt32Range(maxSubmarineRisingTicks, maxSubmarineIdleTicks)
+		e.Ticks = RandInt32Range(maxSubmarineSurfacingTicks, maxSubmarineIdleTicks)
 	default:
-		// Diving: 2/4 probability.
 		e.State = SubmarineStateDiving
 		e.Ticks = submarineTicksBeforeDiving
 	}
@@ -59,11 +62,12 @@ func NewSubmarine() *Entity {
 	return e
 }
 
+// SubmarineTick handles the submarine state machine.
 func SubmarineTick(e *Entity) {
 	switch e.State {
-	case SubmarineStateRising:
+	case SubmarineStateSurfacing:
 		e.Ticks++
-		if e.Ticks >= maxSubmarineRisingTicks {
+		if e.Ticks >= maxSubmarineSurfacingTicks {
 			e.State = SubmarineStateIdle
 		}
 	case SubmarineStateIdle:
@@ -73,6 +77,7 @@ func SubmarineTick(e *Entity) {
 			e.State = SubmarineStateDiving
 		}
 	case SubmarineStateDiving:
+		// Play the animation backwards.
 		e.Ticks--
 		if e.Ticks <= 0 {
 			// Submarine dived - invisible and unreachable. Remove it.
@@ -92,9 +97,11 @@ func SubmarineTick(e *Entity) {
 
 	if e.Pos.Y >= WindowH {
 		e.Remove()
+		return
 	}
 }
 
+// SubmarineRender draws the submarine with animation based on state.
 func SubmarineRender(e *Entity) {
 	frameNo := Clamp(int(e.Ticks)/10, 0, len(submarineFrames)-1)
 	RenderSprite(e.Texture, e.Pos, submarineFrames[frameNo])

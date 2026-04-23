@@ -6,11 +6,13 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// shipFrames are the animation frames for enemy ships.
 var shipFrames = []sdl.Rect{
 	{X: 505, Y: 298, W: 41, H: 197},
 	{X: 463, Y: 298, W: 41, H: 197},
 }
 
+// NewShip creates an enemy ship that moves slowly downward.
 func NewShip() *Entity {
 	e := NewEntity(EntityTypeShip)
 
@@ -28,6 +30,7 @@ func NewShip() *Entity {
 	return e
 }
 
+// ShipTick moves the ship and handles animation.
 func ShipTick(e *Entity) {
 	e.Ticks++
 	if e.Ticks > 10 {
@@ -45,9 +48,11 @@ func ShipTick(e *Entity) {
 
 	if e.Pos.Y >= WindowH {
 		e.Remove()
+		return
 	}
 }
 
+// ShipRender draws the ship with animation.
 func ShipRender(e *Entity) {
 	frameNo := e.Ticks / 5 % int32(len(shipFrames))
 	RenderSprite(e.Texture, e.Pos, shipFrames[frameNo])

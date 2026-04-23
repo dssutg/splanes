@@ -2,10 +2,13 @@ package main
 
 import "github.com/veandco/go-sdl2/sdl"
 
+// mainMenu is the main menu navigation state.
 var mainMenu Menu
 
+// mainButtons are the menu options.
 var mainButtons = []string{"RESUME", "ABOUT", "EXIT"}
 
+// menuMainTick handles input for the main menu.
 func menuMainTick() {
 	handleUpDownSelection(&mainMenu, len(mainButtons))
 
@@ -22,6 +25,7 @@ func menuMainTick() {
 	}
 }
 
+// menuMainRender draws the main menu.
 func menuMainRender() {
 	for i, button := range mainButtons {
 		opts := RenderStringOptions{
@@ -38,7 +42,7 @@ func menuMainRender() {
 			format = "> %s <"
 		}
 
-		RenderString(opts, format, button)
+		RenderStringf(opts, format, button)
 	}
 
 	crop := sdl.Rect{X: 99, Y: 573, W: 278, H: 141}

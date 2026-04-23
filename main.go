@@ -9,13 +9,19 @@ import (
 	"github.com/veandco/go-sdl2/ttf"
 )
 
+// running controls the main game loop. Set to false when the user closes the window.
 var running = true
 
+// waterLayer1 and waterLayer2 are the two scrolling water background layers.
+// They scroll independently to create a seamless tiling effect.
 var (
 	waterLayer1 int32
 	waterLayer2 int32
 )
 
+// reset initializes or resets the game state for a new game.
+// It creates a fresh player, resets water layer positions,
+// returns to the main menu, and starts background music.
 func reset() {
 	player = NewPlayer()
 
@@ -32,11 +38,15 @@ func reset() {
 	PlayMusic(musicBackground0, 70)
 }
 
+// restart removes all entities and resets the game state,
+// used when restarting after game over or player death.
 func restart() {
 	RemoveAllEntities()
 	reset()
 }
 
+// renderWaterLayer renders a tiled water background at the given Y offset.
+// It tiles the 32x32 water sprite to fill the entire window.
 func renderWaterLayer(offsetY int32) {
 	tileW := (WindowW + TileSize - 1) / TileSize
 	tileH := (WindowH + TileSize - 1) / TileSize
@@ -57,6 +67,10 @@ func renderWaterLayer(offsetY int32) {
 	}
 }
 
+// doGameLoop is the main game loop.
+// It uses a high-resolution timer for precise timing control,
+// running game ticks at fixed intervals independent of frame rate.
+// The loop processes events, updates game logic, and renders at 60 FPS.
 func doGameLoop() {
 	// High-resolution timer for precise timing.
 	perFreq := float64(sdl.GetPerformanceFrequency())
@@ -141,6 +155,9 @@ func pollEvents() {
 	}
 }
 
+// tick runs once per game update (20 times per second).
+// It handles pause menu activation and delegates to either
+// menu or game logic depending on the current menu state.
 func tick() {
 	if Keys[KeyPause] {
 		Keys[KeyPause] = false
@@ -164,7 +181,10 @@ func tick() {
 	}
 }
 
+// tickGame runs the game logic: spawning enemies, updating entities,
+// and scrolling the water background. Called every game tick (20 times/second).
 func tickGame() {
+	// Spawn entities.
 	if rand.IntN(20) == 0 {
 		NewEnemyPlane()
 	}
@@ -182,29 +202,41 @@ func tickGame() {
 		NewHealer()
 	}
 
+	// Move water layers.
 	waterLayer1 += 10
 	waterLayer2 += 10
 	if waterLayer2 >= WindowH {
 		waterLayer2 = waterLayer1 - WindowH
+		// Swap the water layers to create the infinite scroll illusion.
 		waterLayer1, waterLayer2 = waterLayer2, waterLayer1
 	}
 
+	// Update all entities.
 	for i := range EntityPool {
 		e := &EntityPool[i]
-		entry := entityTable[e.Kind]
-		if entry.ZIndex >= 0 {
-			entry.Tick(e)
+
+		if e.Kind == EntityTypeNone {
+			continue
 		}
+
+		entry := entityTable[e.Kind]
+		entry.Tick(e)
 	}
 }
 
+// render clears the screen and draws all visible game elements:
+// water layers, entities (sorted by z-index), UI elements (health bar,
+// bomb cooldown, score display), and the current menu if active.
 func render() {
-	renderer.SetDrawColor(0, 0, 0, 0)
-	renderer.Clear()
+	// Clear the screen.
+	_ = renderer.SetDrawColor(0, 0, 0, 0)
+	_ = renderer.Clear()
 
+	// Render water layers.
 	renderWaterLayer(waterLayer1)
 	renderWaterLayer(waterLayer2)
 
+	// Render all entities.
 	for zIndex := 0; zIndex <= 2; zIndex++ {
 		for i := range EntityPool {
 			e := &EntityPool[i]
@@ -215,8 +247,10 @@ func render() {
 		}
 	}
 
+	// Render player health bar.
 	RenderHealthBar(20, 20, 2, int(player.Health))
 
+	// Render bomb cooldown.
 	RenderProgressBar(
 		sdl.Rect{X: 580, Y: 20, W: 100, H: 25},
 		5,
@@ -225,7 +259,8 @@ func render() {
 
 	RenderSmallLogo()
 
-	RenderString(
+	// Render stats.
+	RenderStringf(
 		RenderStringOptions{
 			X:     300,
 			Y:     20,
@@ -243,6 +278,7 @@ func render() {
 }
 
 func main() {
+	// Initialize SDL.
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		log.Fatal("can't init SDL:", err)
 	}

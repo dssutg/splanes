@@ -4,26 +4,31 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-// Keys
+// Key represents a logical game action, independent of physical key bindings.
 type Key uint8
 
+// Logical key constants for game actions.
 const (
-	KeyDown Key = iota
-	KeyEnter
-	KeyLeft
-	KeyMusicVolumeDown
-	KeyMusicVolumeUp
-	KeyPause
-	KeyRight
-	KeyUp
-	KeyShoot
-	KeyBomb
-	KeyRotateLeft
-	KeyRotateRight
+	KeyDown            Key = iota // Move down
+	KeyEnter                      // Confirm selection
+	KeyLeft                       // Move left
+	KeyMusicVolumeDown            // Decrease music volume
+	KeyMusicVolumeUp              // Increase music volume
+	KeyPause                      // Pause/unpause game
+	KeyRight                      // Move right
+	KeyUp                         // Move up
+	KeyShoot                      // Fire bullet
+	KeyBomb                       // Drop bomb
+	KeyRotateLeft                 // Rotate left
+	KeyRotateRight                // Rotate right
 )
 
+// Keys is the current state of all logical keys.
+// true = pressed, false = released.
 var Keys = make(map[Key]bool)
 
+// KeyMap maps SDL keycodes to logical game keys.
+// Allows multiple physical keys to map to the same action.
 var KeyMap = map[sdl.Keycode]Key{
 	sdl.K_ESCAPE: KeyPause,
 	sdl.K_UP:     KeyUp,
@@ -47,12 +52,15 @@ var KeyMap = map[sdl.Keycode]Key{
 	sdl.K_e:      KeyRotateRight,
 }
 
+// UpdateKey sets the state of a logical key based on SDL key events.
 func UpdateKey(keyCode sdl.Keycode, down bool) {
 	if key, ok := KeyMap[keyCode]; ok {
 		Keys[key] = down
 	}
 }
 
+// SingleKeyPress returns true if a key was pressed this frame,
+// then automatically clears it (for one-shot key actions).
 func SingleKeyPress(key Key) bool {
 	pressed := Keys[key]
 	Keys[key] = false

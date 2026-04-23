@@ -2,15 +2,18 @@ package main
 
 import "github.com/veandco/go-sdl2/sdl"
 
+// Health bar sprite crop rectangles from the sprite sheet.
 var (
-	healthBarBorderCrop = sdl.Rect{X: 364, Y: 199, W: 130, H: 14}
-	healthBarElemCrop   = sdl.Rect{X: 494, Y: 199, W: 7, H: 14}
+	healthBarBorderCrop  = sdl.Rect{X: 364, Y: 199, W: 130, H: 14}
+	healthBarSegmentCrop = sdl.Rect{X: 494, Y: 199, W: 7, H: 14}
 )
 
-const maxHealthBarElements = 18
+const maxHealthBarSegments = 18 // Number of segments in the health bar
 
+// RenderHealthBar renders the player health bar at (x, y) with the given scale.
+// health should be in the range [0, 100].
 func RenderHealthBar(x, y, scale int32, health int) {
-	// Render health bar borders.
+	// Render health bar background/border.
 	RenderSprite(
 		TextureMain,
 		sdl.Rect{
@@ -26,25 +29,21 @@ func RenderHealthBar(x, y, scale int32, health int) {
 		return
 	}
 
-	// Determine the number of bar elements to render.
-	// The bar scales the health percent to a fixed number of elements.
-	//
-	// 1. Convert the health from percent to normalized value [0..1],
-	// 2. Interpolate it for max elements.
-	// 3. If bar can't represent more elements (extrapolation), only show max elements.
-	elementCount := min(maxHealthBarElements, health*maxHealthBarElements/100)
+	// Calculate the number of bar segments to render.
+	// The bar scales the health percent to a fixed number of segments.
+	segmentCount := min(maxHealthBarSegments, health*maxHealthBarSegments/100)
 
-	// Render the required number of bar elements.
-	for i := range elementCount {
-		elementOffset := int32(i) * healthBarElemCrop.W * scale
+	// Render the filled portion of the health bar.
+	for i := range segmentCount {
+		segmentOffset := int32(i) * healthBarSegmentCrop.W * scale
 
 		dest := sdl.Rect{
-			X: x + elementOffset,
+			X: x + segmentOffset,
 			Y: y,
-			W: healthBarElemCrop.W * scale,
-			H: healthBarElemCrop.H * scale,
+			W: healthBarSegmentCrop.W * scale,
+			H: healthBarSegmentCrop.H * scale,
 		}
 
-		RenderSprite(TextureMain, dest, healthBarElemCrop)
+		RenderSprite(TextureMain, dest, healthBarSegmentCrop)
 	}
 }

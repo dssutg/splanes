@@ -1,9 +1,12 @@
 package main
 
+// loseMenu is the game over menu navigation state.
 var loseMenu Menu
 
+// loseButtons are the menu options after losing.
 var loseButtons = []string{"RESTART GAME", "EXIT"}
 
+// menuLoseTick handles input for the game over screen.
 func menuLoseTick() {
 	handleUpDownSelection(&loseMenu, len(loseButtons))
 
@@ -18,8 +21,9 @@ func menuLoseTick() {
 	}
 }
 
+// menuLoseRender draws the game over screen.
 func menuLoseRender() {
-	RenderString(
+	RenderStringf(
 		RenderStringOptions{
 			Size:                   menuFontSize,
 			Color:                  menuNormalTextColor,
@@ -29,7 +33,7 @@ func menuLoseRender() {
 		"YOU LOSE!",
 	)
 
-	RenderString(
+	RenderStringf(
 		RenderStringOptions{
 			Size:                   menuFontSize,
 			Color:                  menuNormalTextColor,
@@ -54,6 +58,6 @@ func menuLoseRender() {
 			format = "> %s <"
 		}
 
-		RenderString(opts, format, button)
+		RenderStringf(opts, format, button)
 	}
 }

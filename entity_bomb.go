@@ -6,10 +6,12 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// bombFrames are the sprite frames for bombs.
 var bombFrames = []sdl.Rect{
 	{X: 265, Y: 265, W: 9, H: 21},
 }
 
+// NewBomb creates a new bomb entity at the player's position.
 func NewBomb() *Entity {
 	e := NewEntity(EntityTypeBomb)
 
@@ -24,6 +26,8 @@ func NewBomb() *Entity {
 	return e
 }
 
+// bombCalcSize calculates the current size of a shrinking bomb.
+// The bomb shrinks over time as it falls.
 func bombCalcSize(e *Entity) (w, h int32) {
 	scale := math.Pow(0.90, float64(e.Ticks))
 
@@ -36,9 +40,10 @@ func bombCalcSize(e *Entity) (w, h int32) {
 		h = 1
 	}
 
-	return
+	return w, h
 }
 
+// BombTick moves the bomb and checks for collisions with ships/submarines.
 func BombTick(e *Entity) {
 	e.Ticks += e.TicksDelta
 
@@ -52,29 +57,43 @@ func BombTick(e *Entity) {
 	scaledRect := sdl.Rect{X: e.Pos.X, Y: e.Pos.Y}
 	scaledRect.W, scaledRect.H = bombCalcSize(e)
 
+	dead := false
+
 	for i := range EntityPool {
 		it := &EntityPool[i]
 
 		canAttack := it.Kind == EntityTypeShip || it.Kind == EntityTypeSubmarine
 
-		if canAttack && it.Pos.HasIntersection(&scaledRect) {
-			it.Hurt(e.Damage)
-
-			NewExplosion(scaledRect.X, scaledRect.Y)
-
-			switch it.Kind {
-			case EntityTypeShip:
-				player.Score += 50
-			case EntityTypeSubmarine:
-				player.Score += 200
-			}
-			break
+		if !canAttack {
+			continue
 		}
+
+		if !it.Pos.HasIntersection(&scaledRect) {
+			continue
+		}
+
+		// Bomb hits the target.
+		dead = true
+		it.Hurt(e.Damage)
+
+		NewExplosion(scaledRect.X, scaledRect.Y)
+
+		switch it.Kind {
+		case EntityTypeShip:
+			player.Score += 50
+		case EntityTypeSubmarine:
+			player.Score += 200
+		}
+		break
 	}
 
-	e.Remove()
+	if dead {
+		e.Remove()
+		return
+	}
 }
 
+// BombRender draws the bomb with a shrinking animation.
 func BombRender(e *Entity) {
 	w, h := bombCalcSize(e)
 	RenderSprite(e.Texture, sdl.Rect{X: e.Pos.X, Y: e.Pos.Y, W: w, H: h}, bombFrames[0])

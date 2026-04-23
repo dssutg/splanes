@@ -1,13 +1,17 @@
 package main
 
+// aboutMenu is the about screen navigation state (for future use).
 var aboutMenu Menu
 
+// menuAboutTick handles input for the about screen.
+// Returns to the previous menu when Enter is pressed.
 func menuAboutTick() {
 	if SingleKeyPress(KeyEnter) {
 		menuID = MenuTypeMain
 	}
 }
 
+// menuAboutRender draws the credits/about screen.
 func menuAboutRender() {
 	lines := []string{
 		"Splanes.",
@@ -19,6 +23,7 @@ func menuAboutRender() {
 		"> BACK <",
 	}
 
+	// Render each line.
 	for i, line := range lines {
 		opts := RenderStringOptions{
 			Size:                   menuFontSize,
@@ -31,6 +36,6 @@ func menuAboutRender() {
 			opts.Color = menuHoverTextColor
 		}
 
-		RenderString(opts, "%s", line)
+		RenderStringf(opts, "%s", line)
 	}
 }
