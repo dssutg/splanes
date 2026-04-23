@@ -18,6 +18,8 @@ const (
 	KeyUp
 	KeyShoot
 	KeyBomb
+	KeyRotateLeft
+	KeyRotateRight
 )
 
 var Keys = make(map[Key]bool)
@@ -41,6 +43,8 @@ var KeyMap = map[sdl.Keycode]Key{
 	sdl.K_RETURN: KeyEnter,
 	sdl.K_SPACE:  KeyShoot,
 	sdl.K_x:      KeyBomb,
+	sdl.K_q:      KeyRotateLeft,
+	sdl.K_e:      KeyRotateRight,
 }
 
 func UpdateKey(keyCode sdl.Keycode, down bool) {

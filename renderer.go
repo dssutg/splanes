@@ -12,7 +12,7 @@ const (
 
 	WindowScale = 1
 
-	WindowW  = 800 * WindowScale
+	WindowW = 800 * WindowScale
 	WindowH = 600 * WindowScale
 
 	TileSize = 32
@@ -36,6 +36,16 @@ const (
 
 func RenderSprite(texture TextureID, dest, src sdl.Rect) {
 	renderer.Copy(textures[texture], &src, &dest)
+}
+
+func RenderSpriteEx(
+	texture TextureID,
+	dest, src sdl.Rect,
+	angle float64,
+	center *sdl.Point,
+	flip sdl.RendererFlip,
+) {
+	renderer.CopyEx(textures[texture], &src, &dest, angle, center, flip)
 }
 
 func LoadTexture(filename string) *sdl.Texture {

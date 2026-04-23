@@ -9,7 +9,15 @@ var bulletFrames = []sdl.Rect{
 	{X: 34, Y: 199, W: 32, H: 32},
 }
 
-func NewBullet(etype EntityType, x, y, dirX, dirY int32, ownerType EntityType, damage, bulletFrameNo int32) *Entity {
+func NewBullet(
+	etype EntityType,
+	x, y int32,
+	dirX, dirY int32,
+	ownerType EntityType,
+	damage int32,
+	bulletFrameNo int32,
+	rotation float32,
+) *Entity {
 	e := NewEntity(etype)
 
 	e.InitialFrameNo = bulletFrameNo
@@ -21,6 +29,8 @@ func NewBullet(etype EntityType, x, y, dirX, dirY int32, ownerType EntityType, d
 
 	e.VelX = dirX * 20
 	e.VelY = dirY * 20
+
+	e.Rotation = rotation
 
 	e.OwnerKind = ownerType
 	e.Damage = damage
@@ -73,5 +83,6 @@ func BulletTick(e *Entity) {
 }
 
 func BulletRender(e *Entity) {
-	RenderSprite(e.Texture, e.Pos, bulletFrames[e.InitialFrameNo])
+	e.Crop = bulletFrames[e.InitialFrameNo]
+	e.RenderSprite()
 }

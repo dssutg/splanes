@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"math/rand/v2"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -53,6 +54,17 @@ func PlayerTick(e *Entity) {
 		PlayerDoDie(e)
 		return
 	}
+
+	// Adjust player's rotation by input.
+	const rotationDelta = 10
+	if Keys[KeyRotateLeft] {
+		e.Rotation -= rotationDelta
+	}
+	if Keys[KeyRotateRight] {
+		e.Rotation += rotationDelta
+	}
+	// Restrict rotation freedom.
+	e.Rotation = Clamp(e.Rotation, -30, 30)
 
 	const (
 		minVel         = -20
@@ -109,28 +121,45 @@ func PlayerTick(e *Entity) {
 	}
 
 	if Keys[KeyShoot] && !e.HasShot {
+		// Apply cool down.
 		e.HasShot = true
 
-		const damage = 50
+		sin, cos := math.Sincos(DegToRad(float64(e.Rotation) - 90))
 
-		bullet := NewBullet(EntityTypeBullet, 0, 0, 0, -1, e.Kind, damage, 0)
-		bullet.Pos.X = e.Pos.X + (e.Pos.W-bullet.Pos.W)/2 - 10
-		bullet.Pos.Y = e.Pos.Y - bullet.Pos.H
+		// Determine bullet direction.
+		const dirRadius = 3 // must be small but precise enough
+		dirX := int32(cos * dirRadius)
+		dirY := int32(sin * dirRadius)
+
+		// Spawn the bullet.
+		const damage = 50
+		bullet := NewBullet(EntityTypeBullet, 0, 0, dirX, dirY, e.Kind, damage, 0, e.Rotation)
+
+		// Adjust the bullet initial position.
+		centerX := float64(e.Pos.X + (e.Pos.W-bullet.Pos.W)/2)
+		centerY := float64(e.Pos.Y + (e.Pos.H-bullet.Pos.H)/2)
+		playerRadius := math.Hypot(float64(e.Pos.W)/2, float64(e.Pos.H)/2)
+		const awayBias = 50
+		awayDistance := playerRadius - awayBias
+		bullet.Pos.X = int32(centerX + cos*awayDistance)
+		bullet.Pos.Y = int32(centerY + sin*awayDistance)
 	} else if e.HasShot {
 		e.Ticks++
 		if e.Ticks > 3 {
+			// Cool down is done, can shoot again.
 			e.HasShot = false
 			e.Ticks = 0
 		}
 	}
 
+	// Move the player.
 	xn := e.Pos.X + e.VelX
 	yn := e.Pos.Y + e.VelY
 
+	// Make sure the player stays within the screen.
 	if xn+e.Pos.W >= WindowW+1 {
 		xn = WindowW - e.Pos.W
 	}
-
 	if xn < 0 {
 		xn = 0
 	}

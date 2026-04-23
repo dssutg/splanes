@@ -51,7 +51,7 @@ func EnemyPlaneTick(e *Entity) {
 		e.HasShot = true
 		x := e.Pos.X + (e.Pos.W-128)/2
 		y := e.Pos.Y + e.Pos.W
-		NewBullet(EntityTypeBullet, x, y, 0, 2, e.Kind, 2, 1)
+		NewBullet(EntityTypeBullet, x, y, 0, 2, e.Kind, 2, 1, 0)
 	}
 
 	// Move.

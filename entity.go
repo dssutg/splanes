@@ -30,6 +30,7 @@ type Entity struct {
 	// Common
 	Pos            sdl.Rect   // entity position and size
 	Crop           sdl.Rect   // current entity sprite
+	Rotation       float32    // rotation angle in degrees
 	VelX           int32      // entity horizontal velocity
 	VelY           int32      // entity vertical velocity
 	Texture        TextureID  // current entity texture ID
@@ -115,7 +116,24 @@ func (e *Entity) Hurt(damage int32) {
 }
 
 func (e *Entity) RenderSprite() {
-	RenderSprite(e.Texture, e.Pos, e.Crop)
+	if e.Rotation == 0 {
+		RenderSprite(e.Texture, e.Pos, e.Crop)
+		return
+	}
+
+	center := sdl.Point{
+		X: e.Pos.W / 2,
+		Y: e.Pos.H / 2,
+	}
+
+	RenderSpriteEx(
+		e.Texture,
+		e.Pos,
+		e.Crop,
+		float64(e.Rotation),
+		&center,
+		0,
+	)
 }
 
 func RemoveAllEntities() {
