@@ -16,10 +16,20 @@ A WW2-style scroll shooter game built with Go and SDL2.
 
 | Key | Action |
 |-----|--------|
-| Arrow Keys | Move plane |
-| Space | Drop bomb (limited ammo) |
-| Enter/Return | Confirm selection |
+| Arrow Keys / **WASD** / **JKHL** | Move plane left/right, navigate menu |
+| Q / E | Rotate plane left/right |
+| Space | Fire bullets |
+| X | Drop bomb |
+| Enter | Confirm selection in menu |
 | ESC | Pause / Menu |
+| F1 | Increase music volume |
+| F2 | Decrease music volume |
+
+**Alternative movement keys:**
+- Up: ↑, W, K
+- Down: ↓, S, J
+- Left: ←, A, H
+- Right: →, D, L
 
 ## Build & Run
 
