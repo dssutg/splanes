@@ -62,7 +62,7 @@ func BulletTick(e *Entity) {
 		}
 
 		// Bullet can collide only with the entities it can attack and
-		// whose it does not belong to. Otherwise, it would cause friendly-fire.
+		// who it does not belong to. Otherwise, it would cause friendly-fire.
 		canCollide := (e.OwnerKind == EntityTypePlayer && other.Kind == EntityTypeEnemyPlane) ||
 			(e.OwnerKind == EntityTypeEnemyPlane && other.Kind == EntityTypePlayer)
 
